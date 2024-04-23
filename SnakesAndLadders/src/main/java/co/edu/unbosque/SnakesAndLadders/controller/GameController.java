@@ -1,0 +1,22 @@
+package co.edu.unbosque.SnakesAndLadders.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import co.edu.unbosque.SnakesAndLadders.repository.GameRepository;
+@Controller
+@RequestMapping
+public class GameController {
+	@Autowired
+	private GameRepository gameRep;
+
+	@GetMapping("/createNewGame")
+	public void createNewGame(Model model) {
+		
+	}
+
+}

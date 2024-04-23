@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Personalizar</title>
+
+<style>
+body {
+	width: 100vw;
+	height: 100vh;
+	background-image: url('/Img/personalize.png');
+	background-size: 100% 100%;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	margin: 0;
+	overflow: hidden;
+}
+
+.transparent-button {
+	position: absolute;
+	background-color: transparent;
+	color: transparent;
+	padding: 1% 1%;
+	font-size: 15px;
+	cursor: pointer;
+	top: 90%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 15%;
+	max-width: 5%;
+	height: 2%;
+	text-align: center;
+}
+
+.container {
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	height: 55%;
+}
+
+.transparent-button2 {
+	position: absolute;
+	background-color: transparent;
+	color: black;
+	padding: 1% 1%;
+	font-size: 15px;
+	cursor: pointer;
+	top: 90%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 7%;
+	max-width: 15%;
+	height: 10%;
+	text-align: center;
+}
+
+.transparent-button[disabled] {
+	background-color: white;
+	color: white;
+	cursor: not-allowed;
+	background-color: red;
+}
+
+.transparent-button.selected {
+	background-color: green;
+	color: white;
+	border: 2px solid black;
+	background-color: blue;
+}
+
+.transparent-button3 {
+	position: absolute;
+	background-color: transparent;
+	color: black;
+	padding: 1% 1%;
+	font-size: 15px;
+	cursor: pointer;
+	top: 90%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 11%;
+	height: 6%;
+	text-align: center;
+}
+</style>
+
+</head>
+<body>
+	<a href="/TwoPlayers" class="transparent-button"
+		style="top: 90%; left: 15%;"></a>
+	<a href="/TreePlayers" class="transparent-button"
+		style="top: 90%; left: 27%;"></a>
+	<a href="/FourPlayers" class="transparent-button"
+		style="top: 90%; left: 37%;"></a>
+
+	<button class="transparent-button2" id="button4"
+		style="top: 65%; left: 43.2%;" onclick="seleccionarBoton(4)"></button>
+	<button class="transparent-button2" id="button5"
+		style="top: 65%; left: 50.7%;" onclick="seleccionarBoton(5)"></button>
+	<button class="transparent-button2" id="button6"
+		style="top: 65%; left: 58.3%;" onclick="seleccionarBoton(6)"></button>
+
+	<script>
+    function seleccionarBoton(numeroBoton) {
+        console.log("Se ha seleccionado el botón " + numeroBoton);
+    }
+</script>
+
+
+	<button class="transparent-button3" id="button7"
+		style="top: 89%; left: 60%;"></button>
+	<button class="transparent-button3" id="button8"
+		style="top: 89%; left: 72%;"></button>
+	<button class="transparent-button3" id="button9"
+		style="top: 89%; left: 85%;"></button>
+
+	<script>
+        const buttons = document.querySelectorAll('.transparent-button2');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (!button.disabled) { // Si el botón no está deshabilitado
+                    // Habilitar todos los botones
+                    buttons.forEach(btn => {
+                        btn.disabled = false;
+                        btn.classList.remove('selected'); // Remover la clase 'selected' de todos los botones
+                    });
+                    // Deshabilitar el botón actual
+                    button.disabled = true;
+                    button.classList.add('selected'); // Añadir la clase 'selected' al botón actual
+                }
+            });
+        });
+    </script>
+
+	<script>
+        const buttons2 = document.querySelectorAll('.transparent-button3');
+
+        buttons2.forEach(button => {
+            button.addEventListener('click', () => {
+                if (!button.disabled) { // Si el botón no está deshabilitado
+                    // Habilitar todos los botones
+                    buttons2.forEach(btn => {
+                        btn.disabled = false;
+                        btn.classList.remove('selected'); // Remover la clase 'selected' de todos los botones
+                    });
+                    // Deshabilitar el botón actual
+                    button.disabled = true;
+                    button.classList.add('selected'); // Añadir la clase 'selected' al botón actual
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

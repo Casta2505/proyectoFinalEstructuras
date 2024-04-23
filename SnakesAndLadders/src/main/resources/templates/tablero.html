@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Matriz con imagen</title>
+<style>
+.container {
+	position: relative;
+}
+
+.connection {
+	position: absolute;
+	z-index: 1;
+	/* Establecer la altura y el ancho de la imagen según tus necesidades */
+	height: 50px;
+	width: 50px;
+	/* Ajustar la ruta de la imagen */
+	background-image:
+		url('https://e7.pngegg.com/pngimages/82/397/png-clipart-snakes-and-ladders-red-rattlesnake-s-purple-game-thumbnail.png');
+	/* Establecer la posición inicial de la imagen */
+	background-position: 0 0;
+	background-repeat: no-repeat;
+}
+</style>
+</head>
+<body>
+	<h2>Matriz con imagen:</h2>
+	<div class="container">
+		<!-- Tabla con la matriz -->
+		<table>
+			<tbody>
+				<!-- Iterar sobre las filas de la matriz -->
+				<tr th:each="fila : ${matriz}">
+					<!-- Iterar sobre las columnas de la fila -->
+					<td th:each="elemento : ${fila}" th:text="${elemento}"
+						th:onclick="'mostrarImagen(' + ${elemento} + ')';"></td>
+				</tr>
+			</tbody>
+		</table>
+		<!-- Div para la conexión (imagen) -->
+		<div id="imagen" class="connection"></div>
+	</div>
+
+	<script>
+    function mostrarImagen(numero) {
+        // Aquí puedes agregar lógica para determinar las coordenadas de la imagen en función del número seleccionado
+        var coordenadasX = calcularCoordenadasX(numero);
+        var coordenadasY = calcularCoordenadasY(numero);
+        
+        // Ajusta la posición de la imagen
+        var imagen = document.getElementById("imagen");
+        imagen.style.left = coordenadasX + "px";
+        imagen.style.top = coordenadasY + "px";
+        // Muestra la imagen
+        imagen.style.display = "block";
+    }
+</script>
+
+
+</body>
+</html>
