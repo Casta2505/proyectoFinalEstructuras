@@ -11,6 +11,7 @@ import co.edu.unbosque.SnakesAndLadders.repository.BoardRepository;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Edge;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Graph;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Vertex;
+
 @Controller
 @RequestMapping
 public class BoardController {
@@ -32,6 +33,7 @@ public class BoardController {
 			possible = 18;
 		}
 		for (int i = 0; i < total; i++) {
+			@SuppressWarnings("unchecked")
 			Vertex<Integer> aux = (Vertex<Integer>) graph.getListaNodos().get(i).getInfo();
 			for (int j = 1; j <= possible && i + j <= total; j++) {
 				aux.addEdge(new Edge(aux, graph.getListaNodos().get(i + j).getInfo(), 1));

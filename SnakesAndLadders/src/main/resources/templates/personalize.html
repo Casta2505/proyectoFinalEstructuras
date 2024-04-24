@@ -92,6 +92,7 @@ body {
 
 </head>
 <body>
+
 	<a href="/TwoPlayers" class="transparent-button"
 		style="top: 90%; left: 15%;"></a>
 	<a href="/TreePlayers" class="transparent-button"
@@ -99,64 +100,24 @@ body {
 	<a href="/FourPlayers" class="transparent-button"
 		style="top: 90%; left: 37%;"></a>
 
-	<button class="transparent-button2" id="button4"
+	<button class="transparent-button2" id="buttonGreen"
 		style="top: 65%; left: 43.2%;" onclick="seleccionarBoton(4)"></button>
-	<button class="transparent-button2" id="button5"
+	<button class="transparent-button2" id="buttonPink"
 		style="top: 65%; left: 50.7%;" onclick="seleccionarBoton(5)"></button>
-	<button class="transparent-button2" id="button6"
+	<button class="transparent-button2" id="buttonGray"
 		style="top: 65%; left: 58.3%;" onclick="seleccionarBoton(6)"></button>
 
-	<script>
-    function seleccionarBoton(numeroBoton) {
-        console.log("Se ha seleccionado el botón " + numeroBoton);
-    }
-</script>
+	<form action="/updateGameDifficulty" method="post"
+		th:object="${currentGame}" th:action="@{/updateGameDifficulty}">
+		<!-- Resto de los campos del formulario -->
+		<button type="submit" name="buttonId" value="easy"
+			class="transparent-button3" style="top: 89%; left: 60%;"></button>
+		<button type="submit" name="buttonId" value="medium"
+			class="transparent-button3" style="top: 89%; left: 72%;"></button>
+		<button type="submit" name="buttonId" value="tricky"
+			class="transparent-button3" style="top: 89%; left: 85%;"></button>
+	</form>
 
-
-	<button class="transparent-button3" id="button7"
-		style="top: 89%; left: 60%;"></button>
-	<button class="transparent-button3" id="button8"
-		style="top: 89%; left: 72%;"></button>
-	<button class="transparent-button3" id="button9"
-		style="top: 89%; left: 85%;"></button>
-
-	<script>
-        const buttons = document.querySelectorAll('.transparent-button2');
-
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                if (!button.disabled) { // Si el botón no está deshabilitado
-                    // Habilitar todos los botones
-                    buttons.forEach(btn => {
-                        btn.disabled = false;
-                        btn.classList.remove('selected'); // Remover la clase 'selected' de todos los botones
-                    });
-                    // Deshabilitar el botón actual
-                    button.disabled = true;
-                    button.classList.add('selected'); // Añadir la clase 'selected' al botón actual
-                }
-            });
-        });
-    </script>
-
-	<script>
-        const buttons2 = document.querySelectorAll('.transparent-button3');
-
-        buttons2.forEach(button => {
-            button.addEventListener('click', () => {
-                if (!button.disabled) { // Si el botón no está deshabilitado
-                    // Habilitar todos los botones
-                    buttons2.forEach(btn => {
-                        btn.disabled = false;
-                        btn.classList.remove('selected'); // Remover la clase 'selected' de todos los botones
-                    });
-                    // Deshabilitar el botón actual
-                    button.disabled = true;
-                    button.classList.add('selected'); // Añadir la clase 'selected' al botón actual
-                }
-            });
-        });
-    </script>
 
 </body>
 
