@@ -16,6 +16,7 @@ public class Game {
 	private Integer id;
 	private int playerNum;
 	private String difficulty;
+	private String theme;
 	private int diceNumber;
 	@OneToOne
 	private Board board;
@@ -23,6 +24,14 @@ public class Game {
 	private Player playerTurn;
 	@OneToMany(mappedBy = "game")
 	private List<Player> players;
+
+	public String getTheme() {
+		return theme;
+	}
+
+	public void setTheme(String theme) {
+		this.theme = theme;
+	}
 
 	public Integer getId() {
 		return id;
