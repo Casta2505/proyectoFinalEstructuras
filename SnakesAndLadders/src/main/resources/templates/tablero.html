@@ -1,61 +1,130 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Matriz con imagen</title>
-<style>
-.container {
-	position: relative;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero de Serpientes y Escaleras</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
 
-.connection {
-	position: absolute;
-	z-index: 1;
-	/* Establecer la altura y el ancho de la imagen según tus necesidades */
-	height: 50px;
-	width: 50px;
-	/* Ajustar la ruta de la imagen */
-	background-image:
-		url('https://e7.pngegg.com/pngimages/82/397/png-clipart-snakes-and-ladders-red-rattlesnake-s-purple-game-thumbnail.png');
-	/* Establecer la posición inicial de la imagen */
-	background-position: 0 0;
-	background-repeat: no-repeat;
-}
-</style>
+        #board {
+            display: grid;
+            gap: 2px;
+            border: 2px solid #333;
+            background-color: green;
+            padding: 5px;
+            position: relative;
+        }
+
+        .cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            border: 1px solid #666;
+            background-color: #fff;
+            position: relative;
+        }
+
+        .snake-img {
+            width: 80%;
+            height: 80%;
+            position: absolute;
+            top: 10%;
+            left: 10%;
+        }
+
+        .ladder-img {
+            width: 80%;
+            height: 80%;
+            position: absolute;
+            top: 10%;
+            left: 10%;
+        }
+    </style>
 </head>
 <body>
-	<h2>Matriz con imagen:</h2>
-	<div class="container">
-		<!-- Tabla con la matriz -->
-		<table>
-			<tbody>
-				<!-- Iterar sobre las filas de la matriz -->
-				<tr th:each="fila : ${matriz}">
-					<!-- Iterar sobre las columnas de la fila -->
-					<td th:each="elemento : ${fila}" th:text="${elemento}"
-						th:onclick="'mostrarImagen(' + ${elemento} + ')';"></td>
-				</tr>
-			</tbody>
-		</table>
-		<!-- Div para la conexión (imagen) -->
-		<div id="imagen" class="connection"></div>
-	</div>
+    <div id="board"></div>
 
-	<script>
-    function mostrarImagen(numero) {
-        // Aquí puedes agregar lógica para determinar las coordenadas de la imagen en función del número seleccionado
-        var coordenadasX = calcularCoordenadasX(numero);
-        var coordenadasY = calcularCoordenadasY(numero);
-        
-        // Ajusta la posición de la imagen
-        var imagen = document.getElementById("imagen");
-        imagen.style.left = coordenadasX + "px";
-        imagen.style.top = coordenadasY + "px";
-        // Muestra la imagen
-        imagen.style.display = "block";
-    }
-</script>
+    <script>
+        const numRows = parseInt(prompt("Ingrese el número de filas:"));
+        const numCols = parseInt(prompt("Ingrese el número de columnas:"));
+        const snakeAndLadderPercentage = parseFloat(prompt("Ingrese el porcentaje de serpientes y escaleras (0-100):"));
 
+        if (isNaN(numRows) || isNaN(numCols) || numRows <= 0 || numCols <= 0 || isNaN(snakeAndLadderPercentage) || snakeAndLadderPercentage < 0 || snakeAndLadderPercentage > 100) {
+            alert("Ingrese valores válidos para el tamaño del tablero y el porcentaje de serpientes y escaleras.");
+        } else {
+            const boardMatrix = generateBoardMatrix(numRows, numCols);
 
+            generateSnakesAndLadders(boardMatrix, snakeAndLadderPercentage);
+
+            function generateBoardMatrix(rows, cols) {
+                const matrix = [];
+                for (let i = 0; i < rows; i++) {
+                    matrix.push([]);
+                    for (let j = 0; j < cols; j++) {
+                        matrix[i].push(0);
+                    }
+                }
+                return matrix;
+            }
+
+            function generateSnakesAndLadders(matrix, percentage) {
+                const totalCells = numRows * numCols;
+                const numberOfSnakesAndLadders = Math.floor(totalCells * (percentage / 100));
+
+                for (let i = 0; i < numberOfSnakesAndLadders; i++) {
+                    let x, y;
+                    do {
+                        x = Math.floor(Math.random() * numRows);
+                        y = Math.floor(Math.random() * numCols);
+                    } while (matrix[x][y] !== 0);
+
+                    matrix[x][y] = (Math.random() < 0.5) ? -1 : 1;
+                }
+            }
+
+            function createBoard(matrix) {
+                const board = document.getElementById('board');
+                board.innerHTML = '';
+
+                matrix.forEach((row, rowIndex) => {
+                    row.forEach((cell, colIndex) => {
+                        const cellElement = document.createElement('div');
+                        cellElement.classList.add('cell');
+                        cellElement.textContent = `${rowIndex},${colIndex}`;
+                        board.appendChild(cellElement);
+
+                        if (cell === -1) {
+                            const snakeImg = document.createElement('img');
+                            snakeImg.src = '/Img/snakeF.png'; 
+                            snakeImg.alt = 'snake';
+                            snakeImg.classList.add('snake-img');
+                            cellElement.appendChild(snakeImg);
+                        } else if (cell === 1) {
+                            const ladderImg = document.createElement('img');
+                            ladderImg.src = '/Img/stair.png'; 
+                            ladderImg.alt = 'ladder';
+                            ladderImg.classList.add('ladder-img');
+                            cellElement.appendChild(ladderImg);
+                        }
+                    });
+                });
+
+                board.style.gridTemplateRows = `repeat(${numRows}, 80px)`;
+                board.style.gridTemplateColumns = `repeat(${numCols}, 80px)`;
+            }
+
+            createBoard(boardMatrix);
+        }
+    </script>
 </body>
 </html>
