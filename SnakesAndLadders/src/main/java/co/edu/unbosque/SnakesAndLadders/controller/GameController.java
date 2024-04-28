@@ -1,7 +1,5 @@
 package co.edu.unbosque.SnakesAndLadders.controller;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import co.edu.unbosque.SnakesAndLadders.model.Board;
 import co.edu.unbosque.SnakesAndLadders.model.Game;
-import co.edu.unbosque.SnakesAndLadders.model.Player;
 import co.edu.unbosque.SnakesAndLadders.repository.GameRepository;
 
 @Controller
@@ -39,6 +36,8 @@ public class GameController {
 
 	@GetMapping("/SelectPlayers")
 	public String getPlayers(Model model) {
+		BoardController bc = new BoardController();
+		bc.generateBoard(15, 15, 1, "Easy");
 		return "personalize";
 	}
 
@@ -62,7 +61,7 @@ public class GameController {
 	@PostMapping("/updatePlayers")
 	public String updatePlayers(@ModelAttribute("game") Game game, @RequestParam("playerSelected") String player,
 			@RequestParam("height") int height, @RequestParam("width") int width, Model model) {
-		if(game.getTheme()==null||game.getDifficulty()==null) {
+		if (game.getTheme() == null || game.getDifficulty() == null) {
 			model.addAttribute("mensaje", "Select theme and diffilculty before create players");
 			return "personalize";
 		}
@@ -101,6 +100,10 @@ public class GameController {
 		}
 		model.addAttribute("matriz", matriz);
 		return "tablero";
+	}
+
+	public void generarteGame() {
+
 	}
 
 }

@@ -1,6 +1,5 @@
 package co.edu.unbosque.SnakesAndLadders.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -21,6 +20,8 @@ public class GameService {
 	List<Components> serpientes;
 
 	public GameService() {
+		tamanoA =3;
+		tamanoL = 3;
 		this.tamano = tamanoA * tamanoL;
 	}
 
