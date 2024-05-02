@@ -36,8 +36,6 @@ public class GameController {
 
 	@GetMapping("/SelectPlayers")
 	public String getPlayers(Model model) {
-		BoardController bc = new BoardController();
-		bc.generateBoard(15, 15, 1, "Easy");
 		return "personalize";
 	}
 

@@ -1,13 +1,6 @@
 package co.edu.unbosque.SnakesAndLadders.util.linkedlist;
 
-import java.io.Serializable;
-
-//generico = E
-public class MyLinkedList<E> implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8661957538664167562L;
+public class MyLinkedList<E> {
 	protected Node<E> first;
 	String textList = "";
 	int index = 0;
@@ -93,7 +86,7 @@ public class MyLinkedList<E> implements Serializable {
 			if (counter == 0) {
 				this.first = this.first.getNext();
 			} else {
-				Node<E> previous = get(index - 1);
+				Node<E> previous = getInt(index - 1);
 				previous.setNext(currentNode.getNext());
 			}
 			return data;
@@ -145,11 +138,17 @@ public class MyLinkedList<E> implements Serializable {
 		return updateRecursivo(index, newData, currentNode.getNext(), ++counter);
 	}
 
-	public Node<E> get(int index) {
+	public Node<E> getInt(int index) {
 		if (index < 0 || index >= size()) {
 			return null;
 		}
 		return get(index, this.first, 0);
+	}
+	public E get(int index) {
+		if (index < 0 || index >= size()) {
+			return null;
+		}
+		return get(index, this.first, 0).getInfo();
 	}
 
 	private Node<E> get(int index, Node<E> currentNode, int counter) {
@@ -188,7 +187,7 @@ public class MyLinkedList<E> implements Serializable {
 	}
 
 	public String print(int position) {
-		Node<E> current = get(position);
+		Node<E> current = getInt(position);
 
 		if (isEmpty()) {
 			return textList;
@@ -200,7 +199,7 @@ public class MyLinkedList<E> implements Serializable {
 	}
 
 	public String toString() {
-		Node<E> current = get(index);
+		Node<E> current = getInt(index);
 
 		if (current == null) {
 			return textList;

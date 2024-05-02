@@ -1,41 +1,56 @@
 package co.edu.unbosque.SnakesAndLadders.util.graph;
 
-import java.io.Serializable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
-public class Edge implements Serializable{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8269592582493771348L;
-	private Vertex<?> origen;
-	private Vertex<?> destino;
+@Entity
+public class Edge {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
+	@ManyToOne
+	@JoinColumn(name = "origen_id")
+	private Vertex origen;
+	@ManyToOne
+	@JoinColumn(name = "destino_id")
+	private Vertex destino;
+	@ManyToOne
+	@JoinColumn(name = "camino_id")
+	private Vertex camino;
+
 	private double valor;
 
 	public Edge() {
-		// TODO Auto-generated constructor stub
+
 	}
 
-	public Edge(Vertex<?> origen, Vertex<?> destino, double valor) {
-		super();
-		this.origen = origen;
-		this.destino = destino;
-		this.valor = valor;
+	public Vertex getCamino() {
+		return camino;
 	}
 
-	public Vertex<?> getOrigen() {
+	public void setCamino(Vertex camino) {
+		this.camino = camino;
+	}
+
+	public Vertex getOrigen() {
 		return origen;
 	}
 
-	public void setOrigen(Vertex<?> origen) {
+	public void setOrigen(Vertex origen) {
 		this.origen = origen;
 	}
 
-	public Vertex<?> getDestino() {
+	public Vertex getDestino() {
 		return destino;
 	}
 
-	public void setDestino(Vertex<?> destino) {
+	public void setDestino(Vertex destino) {
 		this.destino = destino;
 	}
 
@@ -49,7 +64,6 @@ public class Edge implements Serializable{
 
 	@Override
 	public String toString() {
-		return "desde: " + origen.getInfo() + ", hasta: " + destino.getInfo() + ", Peso=" + valor + "\n";
+		return "desde: " + origen + ", hasta: " + destino + ", Peso=" + valor + "\n";
 	}
-
 }

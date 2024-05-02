@@ -5,13 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Board {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
-	private Graph graph;
+	@OneToOne
+	private Graph graphData;
 	private int height;
 	private int width;
 
@@ -23,12 +25,12 @@ public class Board {
 		this.id = id;
 	}
 
-	public Graph getGraph() {
-		return graph;
+	public Graph getGraphData() {
+		return graphData;
 	}
 
-	public void setGraph(Graph graph) {
-		this.graph = graph;
+	public void setGraphData(Graph graphData) {
+		this.graphData = graphData;
 	}
 
 	public int getHeight() {

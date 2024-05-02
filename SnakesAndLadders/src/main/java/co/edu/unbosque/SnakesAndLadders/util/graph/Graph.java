@@ -1,32 +1,36 @@
 package co.edu.unbosque.SnakesAndLadders.util.graph;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
-
-public class Graph implements Serializable{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1597013700542252615L;
-	private MyLinkedList<Vertex<?>> listaNodos;
+@Entity
+public class Graph {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
+	@OneToMany(mappedBy = "graph", cascade = CascadeType.ALL)
+	private List<Vertex> listaNodos;
 
 	public Graph() {
-		// TODO Auto-generated constructor stub
-		listaNodos = new MyLinkedList<>();
+		this.listaNodos = new ArrayList<Vertex>();
 	}
 
-	public MyLinkedList<Vertex<?>> getListaNodos() {
+	public List<Vertex> getListaNodos() {
 		return listaNodos;
 	}
 
-	public void setListaNodos(MyLinkedList<Vertex<?>> listaNodos) {
+	public void setListaNodos(List<Vertex> listaNodos) {
 		this.listaNodos = listaNodos;
 	}
 
-	public void addVertex(Vertex<?> v) {
+	public void addVertex(Vertex v) {
 		listaNodos.add(v);
 	}
 

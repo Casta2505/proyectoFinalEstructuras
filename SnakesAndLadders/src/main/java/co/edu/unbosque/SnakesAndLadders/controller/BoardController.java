@@ -1,20 +1,22 @@
 package co.edu.unbosque.SnakesAndLadders.controller;
 
-import java.awt.Component;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import co.edu.unbosque.SnakesAndLadders.model.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import co.edu.unbosque.SnakesAndLadders.model.Board;
 import co.edu.unbosque.SnakesAndLadders.repository.BoardRepository;
+import co.edu.unbosque.SnakesAndLadders.repository.EdgeRepository;
+import co.edu.unbosque.SnakesAndLadders.repository.GraphRepository;
+import co.edu.unbosque.SnakesAndLadders.repository.VertexRepository;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Edge;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Graph;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Vertex;
@@ -25,13 +27,26 @@ import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 public class BoardController {
 	@Autowired
 	private BoardRepository boardRep;
-	private Random random;
+	@Autowired
+	private GraphRepository graphRep;
+	@Autowired
+	private VertexRepository vertexRep;
+	@Autowired
+	private EdgeRepository edgeRep;
+
+	@GetMapping("eliana")
+	public String eliana(Model model) {
+		generateBoard(8, 8, 3, "Easy");
+		return "personalizar";
+	}
 
 	// LOGICA CATRE HPTA PARA GENERAR GRAFO
 	public void generateBoard(int height, int width, int dice, String difficulty) {
 		Board board = new Board();
 		int total = height * width;
 		Graph graph = new Graph();
+		graph.setListaNodos(new ArrayList<Vertex>());
+		graphRep.save(graph);
 		int totalLaddersAndSnakes = 0;
 		// GENERAR ESCALERAS Y SERPIENTES EN LISTAS
 		if (difficulty.equals("Easy")) {
@@ -47,45 +62,19 @@ public class BoardController {
 		MyLinkedList<Components> ladders = new MyLinkedList<>();
 		Random random = new Random();
 		HashSet<Integer> usedPositions = new HashSet<>();
-		for (int i = 0; i < totalLaddersAndSnakes; i++) {
-			int start;
-			int end;
-			do {
-				start = random.nextInt(total) + 1;
-				do {
-					end = random.nextInt(total) + 1;
-				} while (end == start || usedPositions.contains(end) || end >= start || end <= 1);
-			} while (usedPositions.contains(start));
-			usedPositions.add(start);
-			usedPositions.add(end);
-			Components snake = new Components(start, end);
-			snakes.add(snake);
-		}
-		for (int i = 0; i < totalLaddersAndSnakes; i++) {
-			int start;
-			int end;
-			do {
-				start = random.nextInt(total) + 1;
-				do {
-					end = random.nextInt(total) + 1;
-				} while (end == start || usedPositions.contains(end) || end <= start || end >= total);
-			} while (usedPositions.contains(start));
-			usedPositions.add(start);
-			usedPositions.add(end);
-			Components ladder = new Components(start, end);
-			ladders.add(ladder);
-		}
+
+		agregarSerpientes(0, totalLaddersAndSnakes, total, usedPositions, snakes, random);
+		agregarEscaleras(0, totalLaddersAndSnakes, total, usedPositions, ladders, random);
+
+		// -------------------------------------------------
+
 		HashMap<Integer, Integer> snakeLadderMap = new HashMap<>();
 		System.out.println("ladders");
-		for (int i = 0; i < ladders.size(); i++) {
-			System.out.println(ladders.get(i).getInfo().getInicio() + " ... " + ladders.get(i).getInfo().getFin());
-			snakeLadderMap.put(ladders.get(i).getInfo().getInicio(), ladders.get(i).getInfo().getFin());
-		}
+		verEscalerasYSerpientes(0, ladders, total, snakeLadderMap);
+
 		System.out.println("snakes");
-		for (int i = 0; i < snakes.size(); i++) {
-			System.out.println(snakes.get(i).getInfo().getInicio() + " ... " + snakes.get(i).getInfo().getFin());
-			snakeLadderMap.put(snakes.get(i).getInfo().getInicio(), snakes.get(i).getInfo().getFin());
-		}
+		verEscalerasYSerpientes(0, snakes, total, snakeLadderMap);
+
 		// -------------------------------------------
 		// LOGICA AGREGAR ARISTAS, ESCALERAS Y SERPIENTES
 		if (dice == 1) {
@@ -95,30 +84,140 @@ public class BoardController {
 		} else {
 			dice = 18;
 		}
-		for (int i = 0; i < total; i++) {
-			graph.addVertex(new Vertex<Integer>(i + 1));
-		}
-		for (int i = 0; i < total; i++) {
-			Vertex<Integer> aux = (Vertex<Integer>) graph.getListaNodos().get(i).getInfo();
-			int possible = Math.min(dice, total - i - 1);
-			for (int j = 1; j <= possible; j++) {
-				int destination = i + j + 1;
-				if (destination <= total) {
-					if (snakeLadderMap.containsKey(destination)) {
-						destination = snakeLadderMap.get(destination);
-					}
-					if (destination - 1 < graph.getListaNodos().size()) {
-						aux.addEdge(new Edge(aux, graph.getListaNodos().get(destination - 1).getInfo(), 1));
-					}
-				}
-			}
-		}
+
+		agregarAristas(0, graph, total);
+
+		logics(0, total, snakeLadderMap, graph, dice);
+
 		// -------------------------------------------
-		board.setGraph(graph);
+		graphRep.save(graph);
+		board.setGraphData(graph);
 		board.setHeight(height);
 		board.setWidth(width);
-//		boardRep.save(board);
+		boardRep.save(board);
 		System.out.println(graph.toString());
+	}
+
+	// Recursividad--------------------------------------------------------------------------------
+
+	public void logics(int i, int total, HashMap<Integer, Integer> snakeLadderMap, Graph graph, int dice) {
+		if (i == total) {
+			return;
+		}
+		Vertex aux = graph.getListaNodos().get(i);
+		int possible = Math.min(dice, total - i - 1);
+		logicsR(i, 0, total, snakeLadderMap, graph, dice, possible, aux);
+		i++;
+		logics(i, total, snakeLadderMap, graph, dice);
+		return;
+	}
+
+	public void logicsR(int i, int j, int total, HashMap<Integer, Integer> snakeLadderMap, Graph graph, int dice,
+			int possible, Vertex aux) {
+		if (j > possible) {
+			return;
+		}
+		int destination = i + j + 1;
+		if (destination <= total) {
+			if (snakeLadderMap.containsKey(destination)) {
+				destination = snakeLadderMap.get(destination);
+			}
+			if (destination - 1 < graph.getListaNodos().size()) {
+				Edge edge = new Edge();
+				edge.setOrigen(aux);
+				edge.setDestino(graph.getListaNodos().get(destination - 1));
+				edge.setValor(1);
+				edgeRep.save(edge);
+				aux.addEdge(edge);
+				vertexRep.save(aux);
+			}
+		}
+
+		j++;
+		logicsR(i, j, total, snakeLadderMap, graph, dice, possible, aux);
+		return;
+	}
+
+	public void verEscalerasYSerpientes(int i, MyLinkedList<Components> ladders, int total,
+			HashMap<Integer, Integer> snakeLadderMap) {
+		if (i == ladders.size()) {
+			return;
+		}
+
+		System.out.println(ladders.get(i).getInicio() + " ... " + ladders.get(i).getFin());
+		snakeLadderMap.put(ladders.get(i).getInicio(), ladders.get(i).getFin());
+
+		verEscalerasYSerpientes(i + 1, ladders, total, snakeLadderMap);
+		return;
+	}
+
+	public void agregarAristas(int i, Graph graph, int total) {
+		if (i == total) {
+			return;
+		}
+		Vertex v = new Vertex();
+		v.setCaminosAdyacentes(new ArrayList<Edge>());
+		v.setGraph(graph);
+		v.setJugadores(new ArrayList<String>());
+		v.setPosition(i + 1);
+		graph.addVertex(v);
+		vertexRep.save(v);
+		i++;
+		agregarAristas(i, graph, total);
+		return;
+	}
+
+	public void agregarSerpientes(int i, int totalLaddersAndSnakes, int total, HashSet<Integer> usedPositions,
+			MyLinkedList<Components> snakes, Random random) {
+		if (i < totalLaddersAndSnakes) {
+			int start = generateStart(total, usedPositions, random);
+			int end = generateEndSnake(total, start, usedPositions, random);
+			usedPositions.add(start);
+			usedPositions.add(end);
+			Components snake = new Components(start, end);
+			snakes.add(snake);
+			agregarSerpientes(i + 1, totalLaddersAndSnakes, total, usedPositions, snakes, random);
+		}
+	}
+
+	public int generateStart(int total, HashSet<Integer> usedPositions, Random random) {
+		int start = random.nextInt(total) + 1;
+		if (usedPositions.contains(start)) {
+			return generateStart(total, usedPositions, random);
+		} else {
+			return start;
+		}
+	}
+
+	public int generateEndLadder(int total, int start, HashSet<Integer> usedPositions, Random random) {
+		int end = random.nextInt(total) + 1;
+		if (end == start || usedPositions.contains(end) || end <= start || end <= 1) {
+			return generateEndLadder(total, start, usedPositions, random);
+		} else {
+			return end;
+		}
+	}
+
+	public int generateEndSnake(int total, int start, HashSet<Integer> usedPositions, Random random) {
+		int end = random.nextInt(total) + 1;
+		if (end == start || usedPositions.contains(end) || end >= start || end <= 1) {
+			return generateEndSnake(total, start, usedPositions, random);
+		} else {
+			return end;
+		}
+	}
+
+	public void agregarEscaleras(int i, int totalLaddersAndSnakes, int total, HashSet<Integer> usedPositions,
+			MyLinkedList<Components> ladders, Random random) {
+		if (i < totalLaddersAndSnakes) {
+			int start = generateStart(total, usedPositions, random);
+			int end = generateEndLadder(total, start, usedPositions, random);
+			usedPositions.add(start);
+			usedPositions.add(end);
+			Components ladder = new Components(start, end);
+			ladders.add(ladder);
+			agregarEscaleras(i + 1, totalLaddersAndSnakes, total, usedPositions, ladders, random);
+		}
 	}
 
 }

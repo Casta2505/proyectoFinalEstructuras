@@ -1,17 +1,11 @@
 package co.edu.unbosque.SnakesAndLadders.util.linkedlist;
 
-import java.io.Serializable;
-
-public class Node<E> implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6671139658242438078L;
+public class Node<E> {
 	private E info;
 	private Node<E> next;
 
 	public Node() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public Node(E info, Node<E> next) {
@@ -36,9 +30,9 @@ public class Node<E> implements Serializable{
 		this.next = next;
 	}
 
-	//truco - constructor using fields only info.
+	// truco - constructor using fields only info.
 	public Node(E info) {
-		this(info,null);
+		this(info, null);
 	}
 
 	@Override

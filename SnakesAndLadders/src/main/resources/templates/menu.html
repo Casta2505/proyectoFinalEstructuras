@@ -28,8 +28,8 @@ body {
 
 .transparent-button {
 	position: absolute;
-	background-color: transparent; /* Cambia el fondo a verde */
-	color: transparent; /* Cambia el color del texto a negro */
+	background-color: transparent;
+	color: transparent;
 	padding: 1% 1%;
 	font-size: 3vw;
 	cursor: pointer;
@@ -46,7 +46,29 @@ body {
 </head>
 <body>
 	<div class="container">
-		<a href="/SelectPlayers" class="transparent-button">ww</a>
+		<a href="/SelectPlayers" class="transparent-button"
+			onclick="playGameSound(event)">Comenzar Juego</a>
 	</div>
+
+	<audio id="gameSound" preload="auto">
+		<source src="/Img/menuSound3.mp3" type="audio/mpeg">
+	</audio>
+
+	<script>
+	var audio = document.getElementById("gameSound");
+
+	function playGameSound(event) {
+	  event.preventDefault(); 
+	  
+	  audio.currentTime = 0;
+
+	  audio.play(); 
+
+	 
+	  setTimeout(function() {
+	    window.location.href = event.target.href; 
+	  }, 2000); 
+	}
+	</script>
 </body>
 </html>

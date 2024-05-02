@@ -1,60 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero de Serpientes y Escaleras</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablero de Serpientes y Escaleras</title>
+<style>
+body {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background-color: #f0f0f0;
+	background-image: url('/Img/FondoT.png');
+	background-size: 100% 100%;
+	background-position: center;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	margin: 0;
+	overflow: hidden;
+	width: 100vw;
+}
 
-        #board {
-            display: grid;
-            gap: 2px;
-            border: 2px solid #333;
-            background-color: green;
-            padding: 5px;
-            position: relative;
-        }
+body2 {
+	width: 100vw;
+	height: 100vh;
+	background-image: url('/Img/FondoT.png');
+	background-size: 100% 100%;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	margin: 0;
+	overflow: hidden;
+}
 
-        .cell {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            border: 1px solid #666;
-            background-color: #fff;
-            position: relative;
-        }
+#board {
+	display: grid;
+	gap: 2px;
+	border: 2px solid #333;
+	background-color: green;
+	padding: 5px;
+	position: relative;
+}
 
-        .snake-img {
-            width: 80%;
-            height: 80%;
-            position: absolute;
-            top: 10%;
-            left: 10%;
-        }
+.cell {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 18px;
+	border: 1px solid #666;
+	background-color: #fff;
+	position: relative;
+}
 
-        .ladder-img {
-            width: 80%;
-            height: 80%;
-            position: absolute;
-            top: 10%;
-            left: 10%;
-        }
-    </style>
+.snake-img {
+	width: 80%;
+	height: 80%;
+	position: absolute;
+	top: 10%;
+	left: 10%;
+}
+
+.ladder-img {
+	width: 80%;
+	height: 80%;
+	position: absolute;
+	top: 10%;
+	left: 10%;
+}
+</style>
 </head>
 <body>
-    <div id="board"></div>
+	<div id="board"></div>
 
-    <script>
+	<script>
         const numRows = parseInt(prompt("Ingrese el número de filas:"));
         const numCols = parseInt(prompt("Ingrese el número de columnas:"));
         const snakeAndLadderPercentage = parseFloat(prompt("Ingrese el porcentaje de serpientes y escaleras (0-100):"));
@@ -126,5 +149,16 @@
             createBoard(boardMatrix);
         }
     </script>
+
+	<a href="https://www.gifsanimados.org/cat-dados-710.htm"><img
+		src="https://www.gifsanimados.org/data/media/710/dado-imagen-animada-0005.gif"
+		border="0" alt="dado-imagen-animada-0005"
+		style="top: 77%; left: 47.5%;" /></a>
+	<a href="https://www.gifsanimados.org/cat-dados-710.htm"><img
+		src="https://www.gifsanimados.org/data/media/710/dado-imagen-animada-0005.gif"
+		border="0" alt="dado-imagen-animada-0005" /></a>
+	<a href="https://www.gifsanimados.org/cat-dados-710.htm"><img
+		src="https://www.gifsanimados.org/data/media/710/dado-imagen-animada-0005.gif"
+		border="0" alt="dado-imagen-animada-0005" /></a>
 </body>
 </html>
