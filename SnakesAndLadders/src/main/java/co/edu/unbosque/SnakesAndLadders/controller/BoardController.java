@@ -86,8 +86,9 @@ public class BoardController {
 		}
 
 		agregarAristas(0, graph, total);
-
-		logics(0, total, snakeLadderMap, graph, dice);
+		List<Edge> list = new ArrayList<Edge>();
+		logics(0, total, snakeLadderMap, graph, dice, list);
+		edgeRep.saveAll(list);
 
 		// -------------------------------------------
 		graphRep.save(graph);
@@ -100,20 +101,21 @@ public class BoardController {
 
 	// Recursividad--------------------------------------------------------------------------------
 
-	public void logics(int i, int total, HashMap<Integer, Integer> snakeLadderMap, Graph graph, int dice) {
+	public void logics(int i, int total, HashMap<Integer, Integer> snakeLadderMap, Graph graph, int dice,
+			List<Edge> list) {
 		if (i == total) {
 			return;
 		}
 		Vertex aux = graph.getListaNodos().get(i);
 		int possible = Math.min(dice, total - i - 1);
-		logicsR(i, 0, total, snakeLadderMap, graph, dice, possible, aux);
+		logicsR(i, 0, total, snakeLadderMap, graph, dice, possible, aux, list);
 		i++;
-		logics(i, total, snakeLadderMap, graph, dice);
+		logics(i, total, snakeLadderMap, graph, dice, list);
 		return;
 	}
 
 	public void logicsR(int i, int j, int total, HashMap<Integer, Integer> snakeLadderMap, Graph graph, int dice,
-			int possible, Vertex aux) {
+			int possible, Vertex aux, List<Edge> list) {
 		if (j > possible) {
 			return;
 		}
@@ -127,14 +129,14 @@ public class BoardController {
 				edge.setOrigen(aux);
 				edge.setDestino(graph.getListaNodos().get(destination - 1));
 				edge.setValor(1);
-				edgeRep.save(edge);
+				list.add(edge);
 				aux.addEdge(edge);
 				vertexRep.save(aux);
 			}
 		}
 
 		j++;
-		logicsR(i, j, total, snakeLadderMap, graph, dice, possible, aux);
+		logicsR(i, j, total, snakeLadderMap, graph, dice, possible, aux, list);
 		return;
 	}
 
