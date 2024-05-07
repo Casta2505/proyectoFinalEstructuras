@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import co.edu.unbosque.SnakesAndLadders.repository.BoardRepository;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Edge;
@@ -24,31 +26,22 @@ import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
 @Controller
 @RequestMapping
+@SessionAttributes("game")
 public class BoardController {
 	@Autowired
 	private BoardRepository boardRep;
-//	@Autowired
-//	private GraphRepository graphRep;
-//	@Autowired
-//	private VertexRepository vertexRep;
-//	@Autowired
-//	private EdgeRepository edgeRep;
 
-	@GetMapping("eliana")
-	public String eliana(Model model) {
-		generateBoard(8, 8, 3, "Easy");
-		return "personalize";
-	}
-
-	// LOGICA CATRE HPTA PARA GENERAR GRAFO
-	public void generateBoard(int height, int width, int dice, String difficulty) {
-		Board board = new Board();
+	@GetMapping("/generateBoard")
+	public String generateBoard(@ModelAttribute("game") Game game, Model model) {
+		Board board = game.getBoard();
+		int height = game.getBoard().getHeight();
+		int width = game.getBoard().getWidth();
+		String difficulty = game.getDifficulty();
+		int dice = game.getDiceNumber();
 		int total = height * width;
 		Graph graph = new Graph();
 		graph.setListOfNodes(new MyLinkedList<Vertex>());
-//		graphRep.save(graph);
 		int totalLaddersAndSnakes = 0;
-		// GENERAR ESCALERAS Y SERPIENTES EN LISTAS
 		if (difficulty.equals("Easy")) {
 			totalLaddersAndSnakes = (int) (total * 0.02);
 		} else if (difficulty.equals("Medium")) {
@@ -84,19 +77,20 @@ public class BoardController {
 		} else {
 			dice = 18;
 		}
-
 		agregarAristas(0, graph, total);
 		MyLinkedList<Edge> list = new MyLinkedList<Edge>();
 		logics(0, total, snakeLadderMap, graph, dice, list);
-		// edgeRep.saveAll(list);
-
 		// -------------------------------------------
-//		graphRep.save(graph);
 		board.setGraphData(serializeGraph(graph));
 		board.setHeight(height);
 		board.setWidth(width);
-		boardRep.save(board);
-//		System.out.println(graph.toString());
+		board.setLadders(ladders);
+		board.setSnakes(snakes);
+		
+		generateBoardMatrix(board, model);
+		model.addAttribute("diceNumber", dice/6);
+		return "tablero";
+
 	}
 
 	// Recursividad--------------------------------------------------------------------------------
@@ -131,7 +125,6 @@ public class BoardController {
 				edge.setValue(1);
 				list.add(edge);
 				aux.addEdge(edge);
-//				vertexRep.save(aux);
 			}
 		}
 
@@ -220,27 +213,26 @@ public class BoardController {
 		}
 	}
 
-	@GetMapping("/crearMatriz")
-	public String crearMatriz(Model model) {
-		int filas = 10;
-		int columnas = 10;
-		int[][] matriz = new int[filas][columnas];
+	private void generateBoardMatrix(Board board, Model model) {
+		int height = board.getHeight();
+		int width = board.getWidth();
+		Graph g = deserializeGraph(board.getGraphData());
+		Vertex[][] matriz = new Vertex[height][width];
 		boolean izquierdaDerecha = true;
-		int contador = 1;
-		for (int i = filas - 1; i >= 0; i--) {
+		int contador = 0;
+		for (int i = height - 1; i >= 0; i--) {
 			if (izquierdaDerecha) {
-				for (int j = 0; j < columnas; j++) {
-					matriz[i][j] = contador++;
+				for (int j = 0; j < width; j++) {
+					matriz[i][j] = g.getListOfNodes().get(contador++);
 				}
 			} else {
-				for (int j = columnas - 1; j >= 0; j--) {
-					matriz[i][j] = contador++;
+				for (int j = width - 1; j >= 0; j--) {
+					matriz[i][j] = g.getListOfNodes().get(contador++);
 				}
 			}
 			izquierdaDerecha = !izquierdaDerecha;
 		}
 		model.addAttribute("matriz", matriz);
-		return "tablero";
 	}
 
 	public byte[] serializeGraph(Graph graph) {

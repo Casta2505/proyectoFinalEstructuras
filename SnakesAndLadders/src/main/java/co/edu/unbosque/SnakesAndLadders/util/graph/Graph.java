@@ -24,9 +24,4 @@ public class Graph implements Serializable {
 		this.listOfNodes = listOfNodes;
 	}
 
-	@Override
-	public String toString() {
-		return "lista de nodos en el grafo: " + listOfNodes + " \n";
-	}
-
 }

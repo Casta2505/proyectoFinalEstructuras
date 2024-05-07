@@ -43,9 +43,4 @@ public class Edge implements Serializable {
 		this.value = value;
 	}
 
-	@Override
-	public String toString() {
-		return "\n\tEdge [source=" + source + ", destination=" + destination + ", value=" + value + "]";
-	}
-
 }

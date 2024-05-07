@@ -8,10 +8,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping
 public class StartPlaying {
-	
-	@GetMapping("/StartPlaying")
-	public String getPlay(Model model) {
-		return "tablero";
-	}
 
 }

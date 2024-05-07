@@ -1,5 +1,6 @@
 package co.edu.unbosque.SnakesAndLadders.model;
 
+import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,8 +16,26 @@ public class Board {
 	@Lob
 	@Column(columnDefinition = "LONGBLOB")
 	private byte[] graphData;
+	private MyLinkedList<Components> snakes;
+	private MyLinkedList<Components> ladders;
 	private int height;
 	private int width;
+
+	public MyLinkedList<Components> getSnakes() {
+		return snakes;
+	}
+
+	public void setSnakes(MyLinkedList<Components> snakes) {
+		this.snakes = snakes;
+	}
+
+	public MyLinkedList<Components> getLadders() {
+		return ladders;
+	}
+
+	public void setLadders(MyLinkedList<Components> ladders) {
+		this.ladders = ladders;
+	}
 
 	public Integer getId() {
 		return id;

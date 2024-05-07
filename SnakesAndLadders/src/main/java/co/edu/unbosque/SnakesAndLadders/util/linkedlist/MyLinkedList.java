@@ -203,20 +203,18 @@ public class MyLinkedList<E> implements Serializable {
 	}
 
 	public String toString() {
-		Node<E> current = getInt(index);
+		Node<E> current = first;
+		StringBuilder textList = new StringBuilder();
 
-		if (current == null) {
-			return textList;
+		while (current != null) {
+			textList.append(current.getInfo().toString());
+			if (current.getNext() != null) {
+				textList.append("\n");
+			}
+			current = current.getNext();
 		}
 
-		textList += current.getInfo().toString();
-		if (current.getNext() != null) {
-			textList += "\n";
-		}
-		current = current.getNext();
-		index++;
-		toString();
-
-		return textList;
+		return textList.toString();
 	}
+
 }

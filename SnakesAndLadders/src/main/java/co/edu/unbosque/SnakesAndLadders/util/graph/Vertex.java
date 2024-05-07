@@ -42,8 +42,4 @@ public class Vertex implements Serializable {
 		this.adyacentEdges = adyacentEdges;
 	}
 
-	@Override
-	public String toString() {
-		return "\nVertex [info=" + position + ", adyacentEdges=" + adyacentEdges + "]";
-	}
 }

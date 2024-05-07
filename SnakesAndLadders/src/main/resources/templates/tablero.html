@@ -1,48 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tablero de Serpientes y Escaleras</title>
 <style>
 body {
-	margin: 0;
-	padding: 0;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	width: 100vw;
 	height: 100vh;
-	background-color: #f0f0f0;
-	background-image: url('/Img/FondoT.png');
+	background-image: url('/Img/tableroR.png');
 	background-size: 100% 100%;
 	background-position: center;
+	display: flex;
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
 	margin: 0;
 	overflow: hidden;
-	width: 100vw;
 }
 
-body2 {
-	width: 100vw;
-	height: 100vh;
-	background-image: url('/Img/FondoT.png');
-	background-size: 100% 100%;
-	background-position: center;
+.cell {
+	width: 40px;
+	height: 40px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	flex-direction: column;
-	margin: 0;
-	overflow: hidden;
+	font-size: 18px;
+	border: 1px solid #666;
+	background-color: #fff;
 }
 
 #board {
 	display: grid;
 	gap: 2px;
 	border: 2px solid #333;
-	background-color: green;
+	background-color: pink;
 	padding: 5px;
 	position: relative;
 }
@@ -57,7 +49,7 @@ body2 {
 	position: relative;
 }
 
-.snake-img {
+.snake-img, .ladder-img {
 	width: 80%;
 	height: 80%;
 	position: absolute;
@@ -65,100 +57,111 @@ body2 {
 	left: 10%;
 }
 
-.ladder-img {
-	width: 80%;
-	height: 80%;
-	position: absolute;
-	top: 10%;
-	left: 10%;
+#diceBox {
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	border: 2px solid black;
+	padding: 20px;
+	z-index: 9999;
+}
+
+#diceBox img {
+	width: 100px;
+	height: auto;
+	margin: 10px;
+}
+
+#rollDiceButton {
+	position: fixed;
+	top: 20px;
+	left: 20px;
+}
+
+/* Estilos para los dados giratorios */
+.rolling-dice {
+	width: 50px;
+	height: 50px;
+	animation: roll 1s infinite;
+}
+
+@
+keyframes roll { 0% {
+	transform: rotate(0deg);
+}
+100
+%
+{
+transform
+:
+rotate(
+360deg
+);
+}
 }
 </style>
 </head>
 <body>
-	<div id="board"></div>
+	<div id="board">
+		<table>
+			<tbody>
+				<!-- Itera sobre la matriz y muestra cada celda -->
+				<tr th:each="row : ${matriz}">
+					<td th:each="cell : ${row}">
+						<!-- Establece un div con clase 'cell' para cada celda -->
+						<div class="cell">
+							<!-- Muestra el número de posición centrado -->
+							<span th:text="${cell.position}"></span>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+	<div id="diceNumber" th:text="${diceNumber}" style="display: none;"></div>
+
+	<p>
+		Number of dice: <span id="numberOfDice" th:text="${diceNumber}">Número
+			de dados</span>
+	</p>
+	<button id="rollDiceButton" onclick="throwDice()">Tirar Dados</button>
+
+	<div id="diceBox"></div>
 
 	<script>
-        const numRows = parseInt(prompt("Ingrese el número de filas:"));
-        const numCols = parseInt(prompt("Ingrese el número de columnas:"));
-        const snakeAndLadderPercentage = parseFloat(prompt("Ingrese el porcentaje de serpientes y escaleras (0-100):"));
+        function throwDice() {
+            const diceNumber = parseInt(document.getElementById("numberOfDice").textContent);
 
-        if (isNaN(numRows) || isNaN(numCols) || numRows <= 0 || numCols <= 0 || isNaN(snakeAndLadderPercentage) || snakeAndLadderPercentage < 0 || snakeAndLadderPercentage > 100) {
-            alert("Ingrese valores válidos para el tamaño del tablero y el porcentaje de serpientes y escaleras.");
-        } else {
-            const boardMatrix = generateBoardMatrix(numRows, numCols);
+            document.getElementById('diceBox').innerHTML = '';
+            document.getElementById('diceBox').style.display = 'block';
 
-            generateSnakesAndLadders(boardMatrix, snakeAndLadderPercentage);
-
-            function generateBoardMatrix(rows, cols) {
-                const matrix = [];
-                for (let i = 0; i < rows; i++) {
-                    matrix.push([]);
-                    for (let j = 0; j < cols; j++) {
-                        matrix[i].push(0);
-                    }
-                }
-                return matrix;
+            for (let i = 0; i < diceNumber; i++) {
+                const diceImg = document.createElement('img');
+                diceImg.src = '/Img/dadito.gif';
+                diceImg.alt = 'Dado';
+                diceImg.classList.add('rolling-dice');
+                document.getElementById('diceBox').appendChild(diceImg);
             }
 
-            function generateSnakesAndLadders(matrix, percentage) {
-                const totalCells = numRows * numCols;
-                const numberOfSnakesAndLadders = Math.floor(totalCells * (percentage / 100));
+            setTimeout(function() {
+                document.getElementById('diceBox').style.display = 'none';
+                alert("Resultados de los dados: " + getDiceResults(diceNumber));
+            }, 3000); 
+        }
 
-                for (let i = 0; i < numberOfSnakesAndLadders; i++) {
-                    let x, y;
-                    do {
-                        x = Math.floor(Math.random() * numRows);
-                        y = Math.floor(Math.random() * numCols);
-                    } while (matrix[x][y] !== 0);
-
-                    matrix[x][y] = (Math.random() < 0.5) ? -1 : 1;
-                }
+        function getDiceResults(diceNumber) {
+            let results = [];
+            for (let i = 0; i < diceNumber; i++) {
+                const result = Math.floor(Math.random() * 6) + 1;
+                results.push(result);
             }
-
-            function createBoard(matrix) {
-                const board = document.getElementById('board');
-                board.innerHTML = '';
-
-                matrix.forEach((row, rowIndex) => {
-                    row.forEach((cell, colIndex) => {
-                        const cellElement = document.createElement('div');
-                        cellElement.classList.add('cell');
-                        cellElement.textContent = `${rowIndex},${colIndex}`;
-                        board.appendChild(cellElement);
-
-                        if (cell === -1) {
-                            const snakeImg = document.createElement('img');
-                            snakeImg.src = '/Img/snakeF.png'; 
-                            snakeImg.alt = 'snake';
-                            snakeImg.classList.add('snake-img');
-                            cellElement.appendChild(snakeImg);
-                        } else if (cell === 1) {
-                            const ladderImg = document.createElement('img');
-                            ladderImg.src = '/Img/stair.png'; 
-                            ladderImg.alt = 'ladder';
-                            ladderImg.classList.add('ladder-img');
-                            cellElement.appendChild(ladderImg);
-                        }
-                    });
-                });
-
-                board.style.gridTemplateRows = `repeat(${numRows}, 80px)`;
-                board.style.gridTemplateColumns = `repeat(${numCols}, 80px)`;
-            }
-
-            createBoard(boardMatrix);
+            return results.join(', ');
         }
     </script>
-
-	<a href="https://www.gifsanimados.org/cat-dados-710.htm"><img
-		src="https://www.gifsanimados.org/data/media/710/dado-imagen-animada-0005.gif"
-		border="0" alt="dado-imagen-animada-0005"
-		style="top: 77%; left: 47.5%;" /></a>
-	<a href="https://www.gifsanimados.org/cat-dados-710.htm"><img
-		src="https://www.gifsanimados.org/data/media/710/dado-imagen-animada-0005.gif"
-		border="0" alt="dado-imagen-animada-0005" /></a>
-	<a href="https://www.gifsanimados.org/cat-dados-710.htm"><img
-		src="https://www.gifsanimados.org/data/media/710/dado-imagen-animada-0005.gif"
-		border="0" alt="dado-imagen-animada-0005" /></a>
 </body>
 </html>

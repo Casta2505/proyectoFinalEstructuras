@@ -63,6 +63,7 @@ public class GameController {
 			model.addAttribute("mensaje", "Select theme and diffilculty before create players");
 			return "personalize";
 		}
+		System.out.println(height + "  " + width);
 		game.getBoard().setHeight(height);
 		game.getBoard().setWidth(width);
 		if (player.equals("two")) {
