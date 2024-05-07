@@ -1,42 +1,32 @@
 package co.edu.unbosque.SnakesAndLadders.util.graph;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
-@Entity
-public class Graph {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
-	@OneToMany(mappedBy = "graph", cascade = CascadeType.ALL)
-	private List<Vertex> listaNodos;
+public class Graph implements Serializable {
+	private static final long serialVersionUID = -3313277376541604505L;
+	private MyLinkedList<Vertex> listOfNodes;
 
 	public Graph() {
-		this.listaNodos = new ArrayList<Vertex>();
-	}
-
-	public List<Vertex> getListaNodos() {
-		return listaNodos;
-	}
-
-	public void setListaNodos(List<Vertex> listaNodos) {
-		this.listaNodos = listaNodos;
+		listOfNodes = new MyLinkedList<Vertex>();
 	}
 
 	public void addVertex(Vertex v) {
-		listaNodos.add(v);
+		listOfNodes.addLast(v);
+	}
+
+	public MyLinkedList<Vertex> getListOfNodes() {
+		return listOfNodes;
+	}
+
+	public void setListOfNodes(MyLinkedList<Vertex> listOfNodes) {
+		this.listOfNodes = listOfNodes;
 	}
 
 	@Override
 	public String toString() {
-		return "Lista de nodos en el grafo:" + listaNodos + "\n";
+		return "lista de nodos en el grafo: " + listOfNodes + " \n";
 	}
 
 }

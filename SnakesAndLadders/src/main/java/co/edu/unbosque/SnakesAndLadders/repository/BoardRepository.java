@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import co.edu.unbosque.SnakesAndLadders.model.Board;
 
-public interface BoardRepository extends CrudRepository<Board, Integer>{
-	
+public interface BoardRepository extends CrudRepository<Board, Integer> {
+
 	public List<Board> findAll();
 }

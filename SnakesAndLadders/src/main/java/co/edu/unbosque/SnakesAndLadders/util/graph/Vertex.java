@@ -1,37 +1,21 @@
 package co.edu.unbosque.SnakesAndLadders.util.graph;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
-@Entity
-public class Vertex {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+public class Vertex implements Serializable {
+	private static final long serialVersionUID = 43890622329103446L;
 	private Integer position;
-	private List<String> jugadores;
-	@OneToMany(mappedBy = "camino", cascade = CascadeType.ALL)
-	private List<Edge> caminosAdyacentes;
-	@ManyToOne
-	@JoinColumn(name = "graph_id")
-	private Graph graph;
+	private MyLinkedList<String> jugadores;
+	private MyLinkedList<Edge> adyacentEdges;
 
 	public Vertex() {
-
+		this.adyacentEdges = new MyLinkedList<Edge>();
 	}
 
-	public Vertex(Integer position) {
-		this.position = position;
-		caminosAdyacentes = new ArrayList<Edge>();
+	public void addEdge(Edge e) {
+		adyacentEdges.addLast(e);
 	}
 
 	public Integer getPosition() {
@@ -42,37 +26,24 @@ public class Vertex {
 		this.position = position;
 	}
 
-	public List<String> getJugadores() {
+	public MyLinkedList<String> getJugadores() {
 		return jugadores;
 	}
 
-	public void setJugadores(List<String> jugadores) {
+	public void setJugadores(MyLinkedList<String> jugadores) {
 		this.jugadores = jugadores;
 	}
 
-	public List<Edge> getCaminosAdyacentes() {
-		return caminosAdyacentes;
+	public MyLinkedList<Edge> getAdyacentEdges() {
+		return adyacentEdges;
 	}
 
-	public void setCaminosAdyacentes(List<Edge> caminosAdyacentes) {
-		this.caminosAdyacentes = caminosAdyacentes;
-	}
-
-	public Graph getGraph() {
-		return graph;
-	}
-
-	public void setGraph(Graph graph) {
-		this.graph = graph;
-	}
-
-	public void addEdge(Edge e) {
-		caminosAdyacentes.add(e);
+	public void setAdyacentEdges(MyLinkedList<Edge> adyacentEdges) {
+		this.adyacentEdges = adyacentEdges;
 	}
 
 	@Override
 	public String toString() {
-		return "\nVertex " + id + "\n" + caminosAdyacentes;
+		return "\nVertex [info=" + position + ", adyacentEdges=" + adyacentEdges + "]";
 	}
-
 }

@@ -1,19 +1,20 @@
 package co.edu.unbosque.SnakesAndLadders.model;
 
-import co.edu.unbosque.SnakesAndLadders.util.graph.Graph;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.Lob;
 
 @Entity
 public class Board {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
-	@OneToOne
-	private Graph graphData;
+	@Lob
+	@Column(columnDefinition = "LONGBLOB")
+	private byte[] graphData;
 	private int height;
 	private int width;
 
@@ -25,11 +26,11 @@ public class Board {
 		this.id = id;
 	}
 
-	public Graph getGraphData() {
+	public byte[] getGraphData() {
 		return graphData;
 	}
 
-	public void setGraphData(Graph graphData) {
+	public void setGraphData(byte[] graphData) {
 		this.graphData = graphData;
 	}
 

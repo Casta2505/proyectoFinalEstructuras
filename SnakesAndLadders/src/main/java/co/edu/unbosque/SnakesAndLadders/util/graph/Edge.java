@@ -1,69 +1,51 @@
 package co.edu.unbosque.SnakesAndLadders.util.graph;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import java.io.Serializable;
 
-@Entity
-public class Edge {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
-	@ManyToOne
-	@JoinColumn(name = "origen_id")
-	private Vertex origen;
-	@ManyToOne
-	@JoinColumn(name = "destino_id")
-	private Vertex destino;
-	@ManyToOne
-	@JoinColumn(name = "camino_id")
-	private Vertex camino;
-
-	private double valor;
+public class Edge implements Serializable {
+	private static final long serialVersionUID = -1404521109697682021L;
+	private Vertex source;
+	private Vertex destination;
+	private double value;
 
 	public Edge() {
 
 	}
 
-	public Vertex getCamino() {
-		return camino;
+	public Edge(Vertex source, Vertex destination, double value) {
+		super();
+		this.source = source;
+		this.destination = destination;
+		this.value = value;
 	}
 
-	public void setCamino(Vertex camino) {
-		this.camino = camino;
+	public Vertex getSource() {
+		return source;
 	}
 
-	public Vertex getOrigen() {
-		return origen;
+	public void setSource(Vertex source) {
+		this.source = source;
 	}
 
-	public void setOrigen(Vertex origen) {
-		this.origen = origen;
+	public Vertex getDestination() {
+		return destination;
 	}
 
-	public Vertex getDestino() {
-		return destino;
+	public void setDestination(Vertex destination) {
+		this.destination = destination;
 	}
 
-	public void setDestino(Vertex destino) {
-		this.destino = destino;
+	public double getValue() {
+		return value;
 	}
 
-	public double getValor() {
-		return valor;
-	}
-
-	public void setValor(double valor) {
-		this.valor = valor;
+	public void setValue(double value) {
+		this.value = value;
 	}
 
 	@Override
 	public String toString() {
-		return "desde: " + origen + ", hasta: " + destino + ", Peso=" + valor + "\n";
+		return "\n\tEdge [source=" + source + ", destination=" + destination + ", value=" + value + "]";
 	}
+
 }

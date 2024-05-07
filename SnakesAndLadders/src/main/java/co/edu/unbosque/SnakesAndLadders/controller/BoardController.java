@@ -1,12 +1,12 @@
 package co.edu.unbosque.SnakesAndLadders.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 import co.edu.unbosque.SnakesAndLadders.model.*;
 
@@ -16,24 +16,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import co.edu.unbosque.SnakesAndLadders.repository.Board2Repository;
 import co.edu.unbosque.SnakesAndLadders.repository.BoardRepository;
-import co.edu.unbosque.SnakesAndLadders.repository.EdgeRepository;
-import co.edu.unbosque.SnakesAndLadders.repository.GraphRepository;
-import co.edu.unbosque.SnakesAndLadders.repository.VertexRepository;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Edge;
-import co.edu.unbosque.SnakesAndLadders.util.graph.Edge2;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Graph;
-import co.edu.unbosque.SnakesAndLadders.util.graph.Graph2;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Vertex;
-import co.edu.unbosque.SnakesAndLadders.util.graph.Vertex2;
 import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
 @Controller
 @RequestMapping
 public class BoardController {
 	@Autowired
-	private Board2Repository boardRep;
+	private BoardRepository boardRep;
 //	@Autowired
 //	private GraphRepository graphRep;
 //	@Autowired
@@ -49,10 +42,10 @@ public class BoardController {
 
 	// LOGICA CATRE HPTA PARA GENERAR GRAFO
 	public void generateBoard(int height, int width, int dice, String difficulty) {
-		Board2 board = new Board2();
+		Board board = new Board();
 		int total = height * width;
-		Graph2 graph = new Graph2();
-		graph.setListOfNodes(new MyLinkedList<Vertex2>());
+		Graph graph = new Graph();
+		graph.setListOfNodes(new MyLinkedList<Vertex>());
 //		graphRep.save(graph);
 		int totalLaddersAndSnakes = 0;
 		// GENERAR ESCALERAS Y SERPIENTES EN LISTAS
@@ -93,7 +86,7 @@ public class BoardController {
 		}
 
 		agregarAristas(0, graph, total);
-		MyLinkedList<Edge2> list = new MyLinkedList<Edge2>();
+		MyLinkedList<Edge> list = new MyLinkedList<Edge>();
 		logics(0, total, snakeLadderMap, graph, dice, list);
 		// edgeRep.saveAll(list);
 
@@ -108,12 +101,12 @@ public class BoardController {
 
 	// Recursividad--------------------------------------------------------------------------------
 
-	public void logics(int i, int total, HashMap<Integer, Integer> snakeLadderMap, Graph2 graph, int dice,
-			MyLinkedList<Edge2> list) {
+	public void logics(int i, int total, HashMap<Integer, Integer> snakeLadderMap, Graph graph, int dice,
+			MyLinkedList<Edge> list) {
 		if (i == total) {
 			return;
 		}
-		Vertex2 aux = graph.getListOfNodes().get(i);
+		Vertex aux = graph.getListOfNodes().get(i);
 		int possible = Math.min(dice, total - i - 1);
 		logicsR(i, 0, total, snakeLadderMap, graph, dice, possible, aux, list);
 		i++;
@@ -121,8 +114,8 @@ public class BoardController {
 		return;
 	}
 
-	public void logicsR(int i, int j, int total, HashMap<Integer, Integer> snakeLadderMap, Graph2 graph, int dice,
-			int possible, Vertex2 aux, MyLinkedList<Edge2> list) {
+	public void logicsR(int i, int j, int total, HashMap<Integer, Integer> snakeLadderMap, Graph graph, int dice,
+			int possible, Vertex aux, MyLinkedList<Edge> list) {
 		if (j > possible) {
 			return;
 		}
@@ -132,7 +125,7 @@ public class BoardController {
 				destination = snakeLadderMap.get(destination);
 			}
 			if (destination - 1 < graph.getListOfNodes().size()) {
-				Edge2 edge = new Edge2();
+				Edge edge = new Edge();
 				edge.setSource(aux);
 				edge.setDestination(graph.getListOfNodes().get(destination - 1));
 				edge.setValue(1);
@@ -160,17 +153,15 @@ public class BoardController {
 		return;
 	}
 
-	public void agregarAristas(int i, Graph2 graph, int total) {
+	public void agregarAristas(int i, Graph graph, int total) {
 		if (i == total) {
 			return;
 		}
-		Vertex2 v = new Vertex2();
-		v.setAdyacentEdges(new MyLinkedList<Edge2>());
-//		v.setGraph(graph);
+		Vertex v = new Vertex();
+		v.setAdyacentEdges(new MyLinkedList<Edge>());
 		v.setJugadores(new MyLinkedList<String>());
 		v.setPosition(i + 1);
 		graph.addVertex(v);
-//		vertexRep.save(v);
 		i++;
 		agregarAristas(i, graph, total);
 		return;
@@ -229,16 +220,76 @@ public class BoardController {
 		}
 	}
 
-	public byte[] serializeGraph(Graph2 graph) {
+	@GetMapping("/crearMatriz")
+	public String crearMatriz(Model model) {
+		int filas = 10;
+		int columnas = 10;
+		int[][] matriz = new int[filas][columnas];
+		boolean izquierdaDerecha = true;
+		int contador = 1;
+		for (int i = filas - 1; i >= 0; i--) {
+			if (izquierdaDerecha) {
+				for (int j = 0; j < columnas; j++) {
+					matriz[i][j] = contador++;
+				}
+			} else {
+				for (int j = columnas - 1; j >= 0; j--) {
+					matriz[i][j] = contador++;
+				}
+			}
+			izquierdaDerecha = !izquierdaDerecha;
+		}
+		model.addAttribute("matriz", matriz);
+		return "tablero";
+	}
+
+	public byte[] serializeGraph(Graph graph) {
+		ByteArrayOutputStream bos = null;
+		ObjectOutputStream oos = null;
 		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(bos);
+			bos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(bos);
 			oos.writeObject(graph);
 			oos.flush();
 			return bos.toByteArray();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		} finally {
+			try {
+				if (oos != null) {
+					oos.close();
+				}
+				if (bos != null) {
+					bos.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public Graph deserializeGraph(byte[] graph) {
+		ByteArrayInputStream bis = null;
+		ObjectInputStream ois = null;
+		try {
+			bis = new ByteArrayInputStream(graph);
+			ois = new ObjectInputStream(bis);
+			return (Graph) ois.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			try {
+				if (ois != null) {
+					ois.close();
+				}
+				if (bis != null) {
+					bis.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
