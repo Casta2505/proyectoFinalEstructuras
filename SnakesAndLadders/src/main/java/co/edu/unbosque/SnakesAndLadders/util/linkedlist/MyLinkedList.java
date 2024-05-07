@@ -1,6 +1,9 @@
 package co.edu.unbosque.SnakesAndLadders.util.linkedlist;
 
-public class MyLinkedList<E> {
+import java.io.Serializable;
+
+public class MyLinkedList<E> implements Serializable {
+	private static final long serialVersionUID = 7511964570804990954L;
 	protected Node<E> first;
 	String textList = "";
 	int index = 0;
@@ -144,6 +147,7 @@ public class MyLinkedList<E> {
 		}
 		return get(index, this.first, 0);
 	}
+
 	public E get(int index) {
 		if (index < 0 || index >= size()) {
 			return null;

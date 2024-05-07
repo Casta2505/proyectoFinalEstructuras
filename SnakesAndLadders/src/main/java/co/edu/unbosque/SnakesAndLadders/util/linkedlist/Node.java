@@ -1,6 +1,9 @@
 package co.edu.unbosque.SnakesAndLadders.util.linkedlist;
 
-public class Node<E> {
+import java.io.Serializable;
+
+public class Node<E> implements Serializable {
+	private static final long serialVersionUID = -3402242356173324271L;
 	private E info;
 	private Node<E> next;
 

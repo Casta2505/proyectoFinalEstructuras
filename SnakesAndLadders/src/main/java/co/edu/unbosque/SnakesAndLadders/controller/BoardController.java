@@ -1,5 +1,8 @@
 package co.edu.unbosque.SnakesAndLadders.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,40 +16,44 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import co.edu.unbosque.SnakesAndLadders.repository.Board2Repository;
 import co.edu.unbosque.SnakesAndLadders.repository.BoardRepository;
 import co.edu.unbosque.SnakesAndLadders.repository.EdgeRepository;
 import co.edu.unbosque.SnakesAndLadders.repository.GraphRepository;
 import co.edu.unbosque.SnakesAndLadders.repository.VertexRepository;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Edge;
+import co.edu.unbosque.SnakesAndLadders.util.graph.Edge2;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Graph;
+import co.edu.unbosque.SnakesAndLadders.util.graph.Graph2;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Vertex;
+import co.edu.unbosque.SnakesAndLadders.util.graph.Vertex2;
 import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
 @Controller
 @RequestMapping
 public class BoardController {
 	@Autowired
-	private BoardRepository boardRep;
-	@Autowired
-	private GraphRepository graphRep;
-	@Autowired
-	private VertexRepository vertexRep;
-	@Autowired
-	private EdgeRepository edgeRep;
+	private Board2Repository boardRep;
+//	@Autowired
+//	private GraphRepository graphRep;
+//	@Autowired
+//	private VertexRepository vertexRep;
+//	@Autowired
+//	private EdgeRepository edgeRep;
 
 	@GetMapping("eliana")
 	public String eliana(Model model) {
 		generateBoard(8, 8, 3, "Easy");
-		return "personalizar";
+		return "personalize";
 	}
 
 	// LOGICA CATRE HPTA PARA GENERAR GRAFO
 	public void generateBoard(int height, int width, int dice, String difficulty) {
-		Board board = new Board();
+		Board2 board = new Board2();
 		int total = height * width;
-		Graph graph = new Graph();
-		graph.setListaNodos(new ArrayList<Vertex>());
-		graphRep.save(graph);
+		Graph2 graph = new Graph2();
+		graph.setListOfNodes(new MyLinkedList<Vertex2>());
+//		graphRep.save(graph);
 		int totalLaddersAndSnakes = 0;
 		// GENERAR ESCALERAS Y SERPIENTES EN LISTAS
 		if (difficulty.equals("Easy")) {
@@ -86,27 +93,27 @@ public class BoardController {
 		}
 
 		agregarAristas(0, graph, total);
-		List<Edge> list = new ArrayList<Edge>();
+		MyLinkedList<Edge2> list = new MyLinkedList<Edge2>();
 		logics(0, total, snakeLadderMap, graph, dice, list);
-		edgeRep.saveAll(list);
+		// edgeRep.saveAll(list);
 
 		// -------------------------------------------
-		graphRep.save(graph);
-		board.setGraphData(graph);
+//		graphRep.save(graph);
+		board.setGraphData(serializeGraph(graph));
 		board.setHeight(height);
 		board.setWidth(width);
 		boardRep.save(board);
-		System.out.println(graph.toString());
+//		System.out.println(graph.toString());
 	}
 
 	// Recursividad--------------------------------------------------------------------------------
 
-	public void logics(int i, int total, HashMap<Integer, Integer> snakeLadderMap, Graph graph, int dice,
-			List<Edge> list) {
+	public void logics(int i, int total, HashMap<Integer, Integer> snakeLadderMap, Graph2 graph, int dice,
+			MyLinkedList<Edge2> list) {
 		if (i == total) {
 			return;
 		}
-		Vertex aux = graph.getListaNodos().get(i);
+		Vertex2 aux = graph.getListOfNodes().get(i);
 		int possible = Math.min(dice, total - i - 1);
 		logicsR(i, 0, total, snakeLadderMap, graph, dice, possible, aux, list);
 		i++;
@@ -114,8 +121,8 @@ public class BoardController {
 		return;
 	}
 
-	public void logicsR(int i, int j, int total, HashMap<Integer, Integer> snakeLadderMap, Graph graph, int dice,
-			int possible, Vertex aux, List<Edge> list) {
+	public void logicsR(int i, int j, int total, HashMap<Integer, Integer> snakeLadderMap, Graph2 graph, int dice,
+			int possible, Vertex2 aux, MyLinkedList<Edge2> list) {
 		if (j > possible) {
 			return;
 		}
@@ -124,14 +131,14 @@ public class BoardController {
 			if (snakeLadderMap.containsKey(destination)) {
 				destination = snakeLadderMap.get(destination);
 			}
-			if (destination - 1 < graph.getListaNodos().size()) {
-				Edge edge = new Edge();
-				edge.setOrigen(aux);
-				edge.setDestino(graph.getListaNodos().get(destination - 1));
-				edge.setValor(1);
+			if (destination - 1 < graph.getListOfNodes().size()) {
+				Edge2 edge = new Edge2();
+				edge.setSource(aux);
+				edge.setDestination(graph.getListOfNodes().get(destination - 1));
+				edge.setValue(1);
 				list.add(edge);
 				aux.addEdge(edge);
-				vertexRep.save(aux);
+//				vertexRep.save(aux);
 			}
 		}
 
@@ -153,17 +160,17 @@ public class BoardController {
 		return;
 	}
 
-	public void agregarAristas(int i, Graph graph, int total) {
+	public void agregarAristas(int i, Graph2 graph, int total) {
 		if (i == total) {
 			return;
 		}
-		Vertex v = new Vertex();
-		v.setCaminosAdyacentes(new ArrayList<Edge>());
-		v.setGraph(graph);
-		v.setJugadores(new ArrayList<String>());
+		Vertex2 v = new Vertex2();
+		v.setAdyacentEdges(new MyLinkedList<Edge2>());
+//		v.setGraph(graph);
+		v.setJugadores(new MyLinkedList<String>());
 		v.setPosition(i + 1);
 		graph.addVertex(v);
-		vertexRep.save(v);
+//		vertexRep.save(v);
 		i++;
 		agregarAristas(i, graph, total);
 		return;
@@ -219,6 +226,19 @@ public class BoardController {
 			Components ladder = new Components(start, end);
 			ladders.add(ladder);
 			agregarEscaleras(i + 1, totalLaddersAndSnakes, total, usedPositions, ladders, random);
+		}
+	}
+
+	public byte[] serializeGraph(Graph2 graph) {
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(bos);
+			oos.writeObject(graph);
+			oos.flush();
+			return bos.toByteArray();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 
