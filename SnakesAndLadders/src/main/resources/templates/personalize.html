@@ -10,7 +10,7 @@
 body {
 	width: 100vw;
 	height: 100vh;
-	background-image: url('/Img/personalize.png');
+	background-image: url('/Img/personalizar1.png');
 	background-size: 100% 100%;
 	background-position: center;
 	display: flex;
@@ -93,6 +93,11 @@ body {
 
 </head>
 <body>
+
+	<div class="container">
+		<a href="/goBackMenu" class="transparent-button"
+			style="background-color: transparent; left: 8%; top: -23%;"></a>
+	</div>
 	<div th:if="${mensaje}" class="alert alert-warning" role="alert">
 		<p th:text="${mensaje}"></p>
 	</div>
@@ -111,8 +116,9 @@ body {
 			name="height" placeholder="Enter height"
 			style="top: 58%; left: 66.5%;" min="8" required /> <input
 			class="transparent-input" type="number" id="width" name="width"
-			placeholder="Enter width" style="top: 58%; left: 78.9%;" min="8" required />
-		<input type="hidden" id="playerSelected" name="playerSelected" />
+			placeholder="Enter width" style="top: 58%; left: 78.9%;" min="8"
+			required /> <input type="hidden" id="playerSelected"
+			name="playerSelected" />
 	</form>
 
 	<form id="formThemes" th:action="@{/updateThemes}" method="post">

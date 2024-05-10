@@ -17,6 +17,18 @@ public class Player {
 	private boolean turn;
 	@ManyToOne
 	private Game game;
+	
+	public Player() {
+
+	}
+
+	public Player(String name, int boardPosition, boolean turn, Game game) {
+		super();
+		this.name = name;
+		this.boardPosition = boardPosition;
+		this.turn = turn;
+		this.game = game;
+	}
 
 	public Integer getId() {
 		return id;
@@ -28,10 +40,6 @@ public class Player {
 
 	public void setGame(Game game) {
 		this.game = game;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public String getName() {

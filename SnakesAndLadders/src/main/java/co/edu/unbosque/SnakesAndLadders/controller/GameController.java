@@ -1,5 +1,7 @@
 package co.edu.unbosque.SnakesAndLadders.controller;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import co.edu.unbosque.SnakesAndLadders.model.Board;
 import co.edu.unbosque.SnakesAndLadders.model.Game;
+import co.edu.unbosque.SnakesAndLadders.model.Player;
 import co.edu.unbosque.SnakesAndLadders.repository.GameRepository;
 
 @Controller
@@ -78,4 +81,71 @@ public class GameController {
 		}
 	}
 
+	@GetMapping("/StartPlaying")
+	public String getPlay(Model model, @ModelAttribute("game") Game game) {
+		model.addAttribute("diceNumber", game.getDiceNumber());
+		model.addAttribute("theme", game.getTheme());
+		if (game.getTheme().equals("green")) {
+			return "tableroV";
+		} else {
+			if (game.getTheme().equals("pink")) {
+				return "tableroR";
+			} else {
+				if (game.getTheme().equals("gray")) {
+					return "tableroG";
+				}
+			}
+		}
+		return null;
+	}
+
+	@GetMapping("/goBackMenu")
+	public String goBack(Model model) {
+		return "menu";
+	}
+
+	@GetMapping("/ResumeGame")
+	public String resumeG(Model model) {
+		return "ResumeGame";
+	}
+
+	@GetMapping("/ganador")
+	public String goWinner(Model model) {
+		return "ganador";
+	}
+
+	@PostMapping("/SelectTwoCharacters")
+	public String getCharacters(@ModelAttribute("game") Game game, Model model,
+			@RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name) {
+		Player player1 = new Player(player1Name, 1, true, game);
+		Player player2 = new Player(player2Name, 1, false, game);
+		game.setPlayers(Arrays.asList(player1, player2));
+		model.addAttribute("players", 2);
+		return "characters";
+	}
+
+	@PostMapping("/SelectThreeCharacters")
+	public String getCharacters(@ModelAttribute("game") Game game, Model model,
+			@RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name,
+			@RequestParam("player3Name") String player3Name) {
+		Player player1 = new Player(player1Name, 1, true, game);
+		Player player2 = new Player(player2Name, 1, false, game);
+		Player player3 = new Player(player3Name, 1, false, game);
+		game.setPlayers(Arrays.asList(player1, player2, player3));
+		model.addAttribute("players", 3);
+		return "characters";
+	}
+
+	@PostMapping("/SelectFourCharacters")
+	public String getCharacters(@ModelAttribute("game") Game game, Model model,
+			@RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name,
+			@RequestParam("player3Name") String player3Name, @RequestParam("player4Name") String player4Name) {
+		Player player1 = new Player(player1Name, 1, true, game);
+		Player player2 = new Player(player2Name, 1, false, game);
+		Player player3 = new Player(player3Name, 1, false, game);
+		Player player4 = new Player(player4Name, 1, false, game);
+		game.setPlayers(Arrays.asList(player1, player2, player3, player4));
+		model.addAttribute("players", 4);
+		return "characters";
+	}
 }
