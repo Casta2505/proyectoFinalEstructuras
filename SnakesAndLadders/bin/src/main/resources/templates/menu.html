@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bienvenido</title>
+<style>
+body {
+	width: 100vw;
+	height: 100vh;
+	background-image: url('/Img/inicio.png');
+	background-size: 100% 100%;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	margin: 0;
+	overflow: hidden;
+}
+
+.container {
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	height: 55%;
+}
+
+.transparent-button {
+	position: absolute;
+	background-color: transparent;
+	color: transparent;
+	padding: 1% 1%;
+	font-size: 3vw;
+	cursor: pointer;
+	top: 88.5%;
+	left: 51%;
+	transform: translate(-50%, -50%);
+	width: 6%;
+	height: 10%;
+	text-align: center;
+	font-family: 'Chewy', cursive;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<a href="/SelectPlayers" class="transparent-button"
+			onclick="playGameSound(event)"></a>
+	</div>
+
+	<audio id="gameSound" preload="auto">
+		<source src="/Img/menuSound3.mp3" type="audio/mpeg">
+	</audio>
+
+	<script>
+	var audio = document.getElementById("gameSound");
+
+	function playGameSound(event) {
+	  event.preventDefault(); 
+	  
+	  audio.currentTime = 0;
+
+	  audio.play(); 
+
+	 
+	  setTimeout(function() {
+	    window.location.href = event.target.href; 
+	  }, 2000); 
+	}
+	</script>
+</body>
+</html>

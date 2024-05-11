@@ -74,7 +74,7 @@ public class GameController {
 			return "twoPlayers";
 		} else if (player.equals("three")) {
 			game.setPlayerNum(3);
-			return "threePlayers";
+			return "treePlayers";
 		} else {
 			game.setPlayerNum(4);
 			return "fourPlayers";

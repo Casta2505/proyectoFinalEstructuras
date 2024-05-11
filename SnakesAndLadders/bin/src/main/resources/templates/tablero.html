@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablero de Serpientes y Escaleras</title>
+<style>
+body {
+	width: 100vw;
+	height: 100vh;
+	background-image: url('/Img/tableroR.png');
+	background-size: 100% 100%;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	margin: 0;
+	overflow: hidden;
+}
+
+.cell {
+	width: 40px;
+	height: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 18px;
+	border: 1px solid #666;
+	background-color: #fff;
+}
+
+#board {
+	display: grid;
+	gap: 2px;
+	border: 2px solid #333;
+	background-color: pink;
+	padding: 5px;
+	position: relative;
+}
+
+.cell {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 18px;
+	border: 1px solid #666;
+	background-color: #fff;
+	position: relative;
+}
+
+.snake-img, .ladder-img {
+	width: 80%;
+	height: 80%;
+	position: absolute;
+	top: 10%;
+	left: 10%;
+}
+
+#diceBox {
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	border: 2px solid black;
+	padding: 20px;
+	z-index: 9999;
+}
+
+#diceBox img {
+	width: 100px;
+	height: auto;
+	margin: 10px;
+}
+
+#rollDiceButton {
+	position: fixed;
+	top: 20px;
+	left: 20px;
+}
+
+/* Estilos para los dados giratorios */
+.rolling-dice {
+	width: 50px;
+	height: 50px;
+	animation: roll 1s infinite;
+}
+
+@
+keyframes roll { 0% {
+	transform: rotate(0deg);
+}
+100
+%
+{
+transform
+:
+rotate(
+360deg
+);
+}
+}
+</style>
+</head>
+<body>
+	<div id="board">
+		<table>
+			<tbody>
+				<!-- Itera sobre la matriz y muestra cada celda -->
+				<tr th:each="row : ${matriz}">
+					<td th:each="cell : ${row}">
+						<!-- Establece un div con clase 'cell' para cada celda -->
+						<div class="cell">
+							<!-- Muestra el número de posición centrado -->
+							<span th:text="${cell.position}"></span>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+	<div id="diceNumber" th:text="${diceNumber}" style="display: none;"></div>
+
+	<p>
+		Number of dice: <span id="numberOfDice" th:text="${diceNumber}">Número
+			de dados</span>
+	</p>
+	<button id="rollDiceButton" onclick="throwDice()">Tirar Dados</button>
+
+	<div id="diceBox"></div>
+
+	<script>
+        function throwDice() {
+            const diceNumber = parseInt(document.getElementById("numberOfDice").textContent);
+
+            document.getElementById('diceBox').innerHTML = '';
+            document.getElementById('diceBox').style.display = 'block';
+
+            for (let i = 0; i < diceNumber; i++) {
+                const diceImg = document.createElement('img');
+                diceImg.src = '/Img/dadito.gif';
+                diceImg.alt = 'Dado';
+                diceImg.classList.add('rolling-dice');
+                document.getElementById('diceBox').appendChild(diceImg);
+            }
+
+            setTimeout(function() {
+                document.getElementById('diceBox').style.display = 'none';
+                alert("Resultados de los dados: " + getDiceResults(diceNumber));
+            }, 3000); 
+        }
+
+        function getDiceResults(diceNumber) {
+            let results = [];
+            for (let i = 0; i < diceNumber; i++) {
+                const result = Math.floor(Math.random() * 6) + 1;
+                results.push(result);
+            }
+            return results.join(', ');
+        }
+    </script>
+</body>
+</html>

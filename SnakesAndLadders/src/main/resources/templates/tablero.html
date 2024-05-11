@@ -1,109 +1,233 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tablero de Serpientes y Escaleras</title>
-<style>
-body {
-	width: 100vw;
-	height: 100vh;
-	background-image: url('/Img/tableroR.png');
-	background-size: 100% 100%;
-	background-position: center;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	margin: 0;
-	overflow: hidden;
-}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tablero de Serpientes y Escaleras</title>
+	<style>
+		body {
+			width: 100vw;
+			height: 100vh;
+			background-image: url('/Img/tableroR.png');
+			background-size: 100% 100%;
+			background-position: center;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			margin: 0;
+			overflow: hidden;
+		}
 
-.cell {
-	width: 40px;
-	height: 40px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: 18px;
-	border: 1px solid #666;
-	background-color: #fff;
-}
+		.cell {
+			width: 60px;
+			height: 60px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 18px;
+			border: 1px solid #666;
+			background-color: #fff;
+		}
 
-#board {
-	display: grid;
-	gap: 2px;
-	border: 2px solid #333;
-	background-color: pink;
-	padding: 5px;
-	position: relative;
-}
+		#board {
+			display: grid;
+			gap: 2px;
+			border: 2px solid #333;
+			background-color: pink;
+			padding: 5px;
+			position: relative;
+		}
 
-.cell {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: 18px;
-	border: 1px solid #666;
-	background-color: #fff;
-	position: relative;
-}
+		.cell {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 18px;
+			border: 1px solid #666;
+			background-color: #fff;
+			position: relative;
+		}
 
-.snake-img, .ladder-img {
-	width: 80%;
-	height: 80%;
-	position: absolute;
-	top: 10%;
-	left: 10%;
-}
+		.snake-img,
+		.ladder-img {
+			width: 80%;
+			height: 80%;
+			position: absolute;
+			top: 10%;
+			left: 10%;
+		}
 
-#diceBox {
-	display: none;
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	background-color: white;
-	border: 2px solid black;
-	padding: 20px;
-	z-index: 9999;
-}
 
-#diceBox img {
-	width: 100px;
-	height: auto;
-	margin: 10px;
-}
 
-#rollDiceButton {
-	position: fixed;
-	top: 20px;
-	left: 20px;
-}
+		#rollDiceButton {
+			width: 90px;
+			height: 90px;
+			background: transparent;
+			border: none;
+			position: fixed;
+			top: 5px;
+			left: 5px;
+		}
 
-/* Estilos para los dados giratorios */
-.rolling-dice {
-	width: 50px;
-	height: 50px;
-	animation: roll 1s infinite;
-}
+		#rollDiceButton img {
+			width: 80%;
+			height: auto;
 
-@
-keyframes roll { 0% {
-	transform: rotate(0deg);
-}
-100
-%
-{
-transform
-:
-rotate(
-360deg
-);
-}
-}
-</style>
+		}
+
+
+
+		.container {
+			display: none;
+			position: absolute;
+			width: 250px;
+			padding: 60px 0 40px;
+			border-radius: 30px;
+			background: #eeeeee;
+			box-shadow: 0 0 20px rgba(0, 0, 0, .1);
+
+		}
+
+		/*
+    Dice Styles
+*/
+
+		.dice {
+			justify-content: center;
+			position: relative;
+			width: 100px;
+			height: 100px;
+			transform-style: preserve-3d;
+			transition: 1s ease;
+		}
+
+		@keyframes rolling {
+			50% {
+				transform: rotateX(455deg) rotateY(455deg);
+			}
+		}
+
+		.face {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			border-radius: 20px;
+			border: 5px solid #f6f3f0;
+			transform-style: preserve-3d;
+			background: linear-gradient(145deg, #dddbd8, #fff);
+		}
+
+		.face::before {
+			position: absolute;
+			content: '';
+			width: 100%;
+			height: 100%;
+			border-radius: 20px;
+			background: #f6f3f0;
+			transform: translateZ(-1px);
+		}
+
+		.face::after {
+			position: absolute;
+			content: '';
+			top: 50%;
+			left: 50%;
+			width: 18px;
+			height: 18px;
+			border-radius: 50%;
+			background: #131210;
+		}
+
+		.front {
+			transform: translateZ(50px);
+		}
+
+		.back {
+			transform: rotateX(180deg) translateZ(50px);
+		}
+
+		.top {
+			transform: rotateX(90deg) translateZ(50px);
+		}
+
+		.bottom {
+			transform: rotateX(-90deg) translateZ(50px);
+		}
+
+		.right {
+			transform: rotateY(90deg) translateZ(50px);
+		}
+
+		.left {
+			transform: rotateY(-90deg) translateZ(50px);
+		}
+
+		.front::after {
+			width: 30px;
+			height: 30px;
+			background: #f63330;
+			margin: -15px 0 0 -15px;
+		}
+
+		.back::after {
+			margin: -35px 0 0 -30px;
+			box-shadow: 40px 0,
+				0 25px,
+				40px 25px,
+				0 50px,
+				40px 50px;
+		}
+
+		.top::after {
+			margin: -30px 0 0 -30px;
+			box-shadow: 40px 40px;
+		}
+
+		.bottom::after {
+			margin: -36px 0 0 -36px;
+			box-shadow: 26px 26px,
+				52px 52px,
+				52px 0,
+				0 52px;
+		}
+
+		.right::after {
+			margin: -30px 0 0 -30px;
+			box-shadow: 40px 0,
+				0 40px,
+				40px 40px;
+		}
+
+		.left::after {
+			margin: -35px 0 0 -35px;
+			box-shadow: 25px 25px,
+				50px 50px;
+		}
+
+		/*
+    Roll Button styles
+*/
+
+		.roll {
+			cursor: pointer;
+			color: #b33951;
+			margin-top: 60px;
+			padding: 6px 12px;
+			border-radius: 3px;
+			font: 700 16px 'Montserrat';
+			border: 2px solid #b33951;
+			transition: .4s;
+		}
+
+		.roll:hover {
+			color: #fff;
+			background: #b33951;
+		}
+	</style>
 </head>
+
 <body>
 	<div id="board">
 		<table>
@@ -129,39 +253,83 @@ rotate(
 		Number of dice: <span id="numberOfDice" th:text="${diceNumber}">Número
 			de dados</span>
 	</p>
-	<button id="rollDiceButton" onclick="throwDice()">Tirar Dados</button>
 
-	<div id="diceBox"></div>
+	<button id="rollDiceButton" onclick="showDice()" title="Roll the Dice!"> <img src="/Img/diceRoll.png" /> </button>
 
-	<script>
-        function throwDice() {
-            const diceNumber = parseInt(document.getElementById("numberOfDice").textContent);
 
-            document.getElementById('diceBox').innerHTML = '';
-            document.getElementById('diceBox').style.display = 'block';
+		<div class="dice">
+			<div class="face front"></div>
+			<div class="face back"></div>
+			<div class="face top"></div>
+			<div class="face bottom"></div>
+			<div class="face right"></div>
+			<div class="face left"></div>
+		</div>
 
-            for (let i = 0; i < diceNumber; i++) {
-                const diceImg = document.createElement('img');
-                diceImg.src = '/Img/dadito.gif';
-                diceImg.alt = 'Dado';
-                diceImg.classList.add('rolling-dice');
-                document.getElementById('diceBox').appendChild(diceImg);
-            }
+		<button class="roll" onclick="throwDice()">
+			Roll Dice
+		</button>
 
-            setTimeout(function() {
-                document.getElementById('diceBox').style.display = 'none';
-                alert("Resultados de los dados: " + getDiceResults(diceNumber));
-            }, 3000); 
-        }
 
-        function getDiceResults(diceNumber) {
-            let results = [];
-            for (let i = 0; i < diceNumber; i++) {
-                const result = Math.floor(Math.random() * 6) + 1;
-                results.push(result);
-            }
-            return results.join(', ');
-        }
-    </script>
+		<div id="diceResult" style="font-size: 14px; margin-top: 10px;">
+			Resultado del dado:
+		</div>
+
+		<script>
+			function showDice() {
+				var panel = document.getElementById("diceContainer");
+				panel.style.display = panel.style.display === "none" ? "block" : "none";
+			}
+
+			function throwDice() {
+				const dice = document.querySelector('.dice');
+				const rollBtn = document.querySelector('.roll');
+				const diceResult = document.getElementById("diceResult");
+
+				const randomDice = () => {
+					const random = Math.floor(Math.random() * 6) + 1; // Número del 1 al 6
+
+					rollDice(random);
+
+					return random;
+				};
+
+				const rollDice = (random) => {
+					dice.style.animation = 'rolling 4s';
+
+					setTimeout(() => {
+						switch (random) {
+							case 1:
+								dice.style.transform = 'rotateX(0deg) rotateY(0deg)';
+								break;
+							case 2:
+								dice.style.transform = 'rotateX(-90deg) rotateY(0deg)';
+								break;
+							case 3:
+								dice.style.transform = 'rotateX(0deg) rotateY(90deg)';
+								break;
+							case 4:
+								dice.style.transform = 'rotateX(0deg) rotateY(-90deg)';
+								break;
+							case 5:
+								dice.style.transform = 'rotateX(90deg) rotateY(0deg)';
+								break;
+							case 6:
+								dice.style.transform = 'rotateX(180deg) rotateY(0deg)';
+								break;
+						}
+
+						dice.style.animation = 'none';
+
+						// Mostrar el resultado en el elemento
+						diceResult.innerHTML = "Resultado del dado: " + random;
+
+					}, 4050); // Tiempo para que la animación se complete
+				};
+
+				rollBtn.addEventListener('click', randomDice);
+			}
+		</script>
 </body>
+
 </html>

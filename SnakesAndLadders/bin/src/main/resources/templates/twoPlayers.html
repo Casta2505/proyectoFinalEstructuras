@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Three Players</title>
+<title>Dos jugadores</title>
 
 <style>
 body {
 	width: 100vw;
 	height: 100vh;
-	background-image: url('/Img/treePlayers.png');
+	background-image: url('/Img/twoPlayers.png');
 	background-size: 100% 100%;
 	background-position: center;
 	display: flex;
@@ -53,11 +53,10 @@ body {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	width: 14%;
-	height: 8%;
+	height: 6%;
 	text-align: center;
 	border: none;
 }
-
 .transparent-button2 {
 	position: absolute;
 	background-color: transparent;
@@ -77,16 +76,13 @@ body {
 
 </head>
 <body>
-	<form action="/SelectThreeCharacters" method="post">
+	<form action="/SelectTwoCharacters" method="post">
 		<input class="transparent-input" type="text" id="player1Name"
 			name="player1Name" placeholder="Enter NickName"
-			style="top: 65%; left: 24.5%;" required /> <input
+			style="top: 65%; left: 35.3%;" required /> <input
 			class="transparent-input" type="text" id="player2Name"
 			name="player2Name" placeholder="Enter NickName"
-			style="top: 62%; left: 51%;" required /> <input
-			class="transparent-input" type="text" id="player3Name"
-			name="player3Name" placeholder="Enter NickName"
-			style="top: 65%; left: 75%;" required />
+			style="top: 65%; left: 65.5%;" required />
 		<button type="submit" class="transparent-button2"
 			style="top: 90%; left: 49.5%;"></button>
 	</form>

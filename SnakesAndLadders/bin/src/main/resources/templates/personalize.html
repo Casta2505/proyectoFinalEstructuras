@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Personalizar</title>
+
+<style>
+body {
+	width: 100vw;
+	height: 100vh;
+	background-image: url('/Img/personalizar1.png');
+	background-size: 100% 100%;
+	background-position: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	margin: 0;
+	overflow: hidden;
+}
+
+.transparent-button {
+	position: absolute;
+	background-color: transparent;
+	color: transparent;
+	padding: 1% 1%;
+	font-size: 15px;
+	cursor: pointer;
+	top: 90%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 15%;
+	max-width: 5%;
+	height: 2%;
+	text-align: center;
+}
+
+.container {
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	height: 55%;
+}
+
+.transparent-button2 {
+	position: absolute;
+	background-color: transparent;
+	padding: 1% 1%;
+	font-size: 15px;
+	cursor: pointer;
+	top: 90%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 6%;
+	max-width: 15%;
+	height: 11%;
+	text-align: center;
+	border: none;
+}
+
+.transparent-button3 {
+	position: absolute;
+	background-color: transparent;
+	padding: 1% 1%;
+	font-size: 15px;
+	cursor: pointer;
+	top: 90%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 11%;
+	height: 6.7%;
+	text-align: center;
+	border: none;
+}
+
+.transparent-input {
+	position: absolute;
+	background-color: transparent;
+	padding: 1% 1%;
+	font-size: 15px;
+	cursor: pointer;
+	top: 90%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 6.6%;
+	height: 2.5%;
+	text-align: center;
+	border: none;
+}
+</style>
+
+</head>
+<body>
+
+	<div class="container">
+		<a href="/goBackMenu" class="transparent-button"
+			style="background-color: transparent; left: 8%; top: -23%;"></a>
+	</div>
+	<div th:if="${mensaje}" class="alert alert-warning" role="alert">
+		<p th:text="${mensaje}"></p>
+	</div>
+
+	<form id="formPlayers" th:action="@{/updatePlayers}" method="post">
+
+		<!-- Botones de jugadores -->
+		<button class="transparent-button2" id="two"
+			style="top: 88%; left: 14.5%;" onclick="setPlayersAndSubmit('two')"></button>
+		<button class="transparent-button2" id="three"
+			style="top: 88%; left: 25%;" onclick="setPlayersAndSubmit('three')"></button>
+		<button class="transparent-button2" id="four"
+			style="top: 88%; left: 34%;" onclick="setPlayersAndSubmit('four')"></button>
+
+		<input class="transparent-input" type="number" id="height"
+			name="height" placeholder="Enter height"
+			style="top: 58%; left: 66.5%;" min="8" required /> <input
+			class="transparent-input" type="number" id="width" name="width"
+			placeholder="Enter width" style="top: 58%; left: 78.9%;" min="8"
+			required /> <input type="hidden" id="playerSelected"
+			name="playerSelected" />
+	</form>
+
+	<form id="formThemes" th:action="@{/updateThemes}" method="post">
+
+		<!-- Botones de jugadores -->
+		<button class="transparent-button2" id="green"
+			style="top: 57%; left: 18.3%;" onclick="setThemesAndSubmit('green')"></button>
+		<button class="transparent-button2" id="pink"
+			style="top: 57%; left: 25.5%;" onclick="setThemesAndSubmit('pink')"></button>
+		<button class="transparent-button2" id="gray"
+			style="top: 57%; left: 32.7%;" onclick="setThemesAndSubmit('gray')"></button>
+
+		<input type="hidden" id="themes" name="themes" th:value="${themes}" />
+
+	</form>
+
+
+
+	<form id="formDifficulty" th:action="@{/updateDifficulty}"
+		method="post">
+		<!-- Botones de dificultad -->
+		<button class="transparent-button3" id="button7"
+			style="top: 87.7%; left: 55%;"
+			onclick="setDificultadAndSubmit('Easy')"></button>
+		<button class="transparent-button3" id="button8"
+			style="top: 87.7%; left: 66.3%;"
+			onclick="setDificultadAndSubmit('Medium')"></button>
+		<button class="transparent-button3" id="button9"
+			style="top: 87.7%; left: 78%;"
+			onclick="setDificultadAndSubmit('Tricky')"></button>
+		<button class="transparent-button3" id="button10"
+			style="top: 87.7%; left: 91%; width: 14%;"
+			onclick="setDificultadAndSubmit('Impossible')"></button>
+
+		<!-- Campos ocultos -->
+		<input type="hidden" id="difficulty" name="difficulty"
+			th:value="${difficulty}" />
+	</form>
+	<script>
+    function setDificultadAndSubmit(dificultad) {
+        document.getElementById('difficulty').value = dificultad;
+        document.getElementById('formDifficulty').submit();
+    }
+
+    function setThemesAndSubmit(themes) {
+        document.getElementById('themes').value = themes;
+        document.getElementById('formThemes').submit();
+    }
+
+    function setPlayersAndSubmit(playerSelected) {
+        var height = document.getElementById('height').value;
+        var width = document.getElementById('width').value;
+        if (height.trim() === '' || width.trim() === '') {
+            alert('Por favor, completa todos los campos.');
+            return; 
+        }
+        if (height < 8 || width < 8) {
+            alert('La altura y el ancho deben ser al menos 8.');
+            return;
+        }
+        document.getElementById('playerSelected').value = playerSelected;
+        document.getElementById('formPlayers').submit();
+    }
+        
+</script>
+
+</body>
+
+</html>
