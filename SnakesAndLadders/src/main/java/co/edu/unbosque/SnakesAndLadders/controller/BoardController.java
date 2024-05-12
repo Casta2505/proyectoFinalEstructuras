@@ -5,8 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import co.edu.unbosque.SnakesAndLadders.model.*;
 
@@ -15,7 +17,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import co.edu.unbosque.SnakesAndLadders.repository.BoardRepository;
@@ -31,8 +35,8 @@ public class BoardController {
 	@Autowired
 	private BoardRepository boardRep;
 
-	@GetMapping("/generateBoard")
-	public String generateBoard(@ModelAttribute("game") Game game, Model model) {
+	@PostMapping("/generateBoard")
+	public String generateBoard(@ModelAttribute("game") Game game, @RequestParam("characters") List<String> characters, Model model) {
 		Board board = game.getBoard();
 		int height = game.getBoard().getHeight();
 		int width = game.getBoard().getWidth();
@@ -87,7 +91,7 @@ public class BoardController {
 		board.setLadders(ladders);
 		board.setSnakes(snakes);
 		
-		generateBoardMatrix(board, model);
+		generateBoardMatrix(board, model,characters);
 		model.addAttribute("diceNumber", dice/6);
 		return "tablero";
 
@@ -152,7 +156,7 @@ public class BoardController {
 		}
 		Vertex v = new Vertex();
 		v.setAdyacentEdges(new MyLinkedList<Edge>());
-		v.setJugadores(new MyLinkedList<String>());
+		v.setJugadores(new ArrayList<String>());
 		v.setPosition(i + 1);
 		graph.addVertex(v);
 		i++;
@@ -213,10 +217,11 @@ public class BoardController {
 		}
 	}
 
-	private void generateBoardMatrix(Board board, Model model) {
+	private void generateBoardMatrix(Board board, Model model, List<String> characters) {
 		int height = board.getHeight();
 		int width = board.getWidth();
 		Graph g = deserializeGraph(board.getGraphData());
+		g.getListOfNodes().get(0).setJugadores(characters);
 		Vertex[][] matriz = new Vertex[height][width];
 		boolean izquierdaDerecha = true;
 		int contador = 0;

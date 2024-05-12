@@ -2,8 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Bungee&display=swap">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Personajes</title>
+<title>Characters</title>
 <style>
 * {
 	margin: 0;
@@ -28,7 +30,7 @@ body {
 .transparent-button {
 	position: absolute;
 	background-color: transparent;
-	color: transparent;
+	color: white;
 	padding: 1% 1%;
 	font-size: 2vw;
 	cursor: pointer;
@@ -54,7 +56,7 @@ body {
 
 .b-game-card {
 	position: relative;
-	z-index: 1;
+	z-index: 1; /* Asegurar que la imagen esté por debajo del badge */
 	width: 150px;
 	height: 150px;
 	margin: 5px;
@@ -117,54 +119,137 @@ body {
 	opacity: 0.6;
 	transform: rotateX(7deg) translateY(-6px) scale(1.05);
 }
+
+.badge {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: 30px;
+	height: 30px;
+	background-color: #007bff;
+	color: white;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 16px;
+	z-index: 20;
+}
+
+.reset-button {
+	font-family: 'Bungee', cursive;
+	position: absolute;
+	background-color: #007bff;
+	color: white;
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	bottom: 5vw;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 13vw;
+	max-width: 100px;
+	height: 10vh;
+	text-align: center;
+	padding: 10px 20px;
+}
 </style>
 </head>
 <body>
-	<a href="/generateBoard" class="transparent-button"
-		style="top: 81%; left: 83%;">qwsde</a>
-
 	<div class="l-container">
-		<div class="b-game-card" onclick="toggleSelected(event)">
+		<div class="b-game-card" data-character-id="1"
+			onclick="toggleSelected(event)">
 			<div class="b-game-card__cover"
 				style="background-image: url('/Img/p1.png');"></div>
+			<div class="badge"></div>
 		</div>
-		<div class="b-game-card" onclick="toggleSelected(event)">
+		<div class="b-game-card" data-character-id="2"
+			onclick="toggleSelected(event,2)">
 			<div class="b-game-card__cover"
 				style="background-image: url('/Img/p2.png');"></div>
+			<div class="badge"></div>
 		</div>
-		<div class="b-game-card" onclick="toggleSelected(event)">
+		<div class="b-game-card" data-character-id="3"
+			onclick="toggleSelected(event,3)">
 			<div class="b-game-card__cover"
 				style="background-image: url('/Img/p3.png');"></div>
+			<div class="badge"></div>
 		</div>
-		<div class="b-game-card" onclick="toggleSelected(event)">
+		<div class="b-game-card" data-character-id="4"
+			onclick="toggleSelected(event,4)">
 			<div class="b-game-card__cover"
 				style="background-image: url('/Img/p4.png');"></div>
+			<div class="badge"></div>
 		</div>
-		<div class="b-game-card" onclick="toggleSelected(event)">
+		<div class="b-game-card" data-character-id="5"
+			onclick="toggleSelected(event,5)">
 			<div class="b-game-card__cover"
 				style="background-image: url('/Img/p5.png');"></div>
+			<div class="badge"></div>
 		</div>
-		<div class="b-game-card" onclick="toggleSelected(event)">
+		<div class="b-game-card" data-character-id="6"
+			onclick="toggleSelected(event,6)">
 			<div class="b-game-card__cover"
 				style="background-image: url('/Img/p6.png');"></div>
+			<div class="badge"></div>
 		</div>
+
+		<button onclick="resetSelection()" class="reset-button"
+			style="top: 81%; left: 13%;">Reset</button>
+
+		<form id="formCharacters" th:action="@{/generateBoard}" method="post">
+			<input type="hidden" id="characters" name="characters"
+				th:value="${characters}" />
+			<button type="submit" class="transparent-button"
+				style="top: 81%; left: 83%;"></button>
+		</form>
 	</div>
 
+	<span id="playerNum" th:text="${players}" style="display: none;"></span>
+
 	<script>
-let maxSelected = 3; //Configurar máximo de botones que se pueden seleccionar
+    const maxSelected = parseInt(document.getElementById('playerNum').innerText);
 
-function toggleSelected(event) {
-  const card = event.currentTarget;
-  const selectedCards = document.querySelectorAll('.b-game-card.selected'); 
+    function toggleSelected(event) {
+        const button = event.currentTarget;
+        const selectedButtons = document.querySelectorAll('.b-game-card.selected');
 
-  if (card.classList.contains('selected')) {
-    card.classList.remove('selected');
-  } else {
-    if (selectedCards.length < maxSelected) {
-      card.classList.add('selected'); 
+        if (button.classList.contains('selected') || selectedButtons.length >= maxSelected) {
+            return;
+        }
+
+        button.classList.add('selected');
+        button.querySelector('.badge').innerText = selectedButtons.length + 1;
+
+        // Agregar el ID del personaje seleccionado a la lista de IDs
+        const characterId = button.getAttribute('data-character-id');
+
+        // Obtener el campo de entrada oculto
+        const charactersInput = document.getElementById('characters');
+
+        // Obtener la lista de caracteres como una lista de números
+        let characterIds = charactersInput.value ? charactersInput.value.split(',').map(Number) : [];
+
+        // Agregar el nuevo ID a la lista
+        characterIds.push(parseInt(characterId));
+
+        // Actualizar el valor del campo de entrada
+        charactersInput.value = characterIds.join(',');
     }
-  }
-}
+
+    function resetSelection() {
+        const selectedButtons = document.querySelectorAll('.b-game-card.selected');
+        selectedButtons.forEach(button => {
+            button.classList.remove('selected');
+            button.querySelector('.badge').innerText = '';
+        });
+
+        const charactersInput = document.getElementById('characters');
+        charactersInput.value = ''; 
+    }
 </script>
+
+
+
 </body>
 </html>

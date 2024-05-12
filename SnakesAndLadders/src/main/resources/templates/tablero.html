@@ -21,8 +21,8 @@
 		}
 
 		.cell {
-			width: 60px;
-			height: 60px;
+			width: 40px;
+			height: 40px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -41,14 +41,14 @@
 		}
 
 		.cell {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			font-size: 18px;
-			border: 1px solid #666;
-			background-color: #fff;
-			position: relative;
-		}
+            width: 50px;
+            height: 50px;
+            border: 1px solid black;
+            display: inline-block;
+            box-sizing: border-box;
+            text-align: center;
+            line-height: 50px;
+        }
 
 		.snake-img,
 		.ladder-img {
@@ -128,6 +128,19 @@
 			background: #f6f3f0;
 			transform: translateZ(-1px);
 		}
+		.game-piece {
+    		width: 40px;
+    		height: 40px;
+    		background-size: cover;
+		}
+
+		.empty {
+    		width: 40px;
+    		height: 40px;
+    		background-color: transparent;
+		}
+
+		
 
 		.face::after {
 			position: absolute;
@@ -229,30 +242,28 @@
 </head>
 
 <body>
-	<div id="board">
-		<table>
-			<tbody>
-				<!-- Itera sobre la matriz y muestra cada celda -->
-				<tr th:each="row : ${matriz}">
-					<td th:each="cell : ${row}">
-						<!-- Establece un div con clase 'cell' para cada celda -->
-						<div class="cell">
-							<!-- Muestra el número de posición centrado -->
-							<span th:text="${cell.position}"></span>
-						</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+	<div style="overflow-x: auto; overflow-y: auto;">
+    <div id="board">
+        <table>
+            <tbody>
+                <tr th:each="row : ${matriz}">
+                    <td th:each="cell : ${row}">
+                        <div class="cell" style="position: relative;">
+                            <span th:each="number : ${cell.jugadores}">
+                                <img th:src="@{'/Img/p' + ${number} + '.png'}" style="max-width: 100%; max-height: 100%; position: absolute; top: 0; left: 0;" />
+                            </span>
+                            <span th:text="${cell.position}"></span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+	
 
 
-	<div id="diceNumber" th:text="${diceNumber}" style="display: none;"></div>
-
-	<p>
-		Number of dice: <span id="numberOfDice" th:text="${diceNumber}">Número
-			de dados</span>
-	</p>
+	<span id="numberOfDice" th:text="${diceNumber}" style="display: none;"></span>
 
 	<button id="rollDiceButton" onclick="showDice()" title="Roll the Dice!"> <img src="/Img/diceRoll.png" /> </button>
 
@@ -287,7 +298,7 @@
 				const diceResult = document.getElementById("diceResult");
 
 				const randomDice = () => {
-					const random = Math.floor(Math.random() * 6) + 1; // Número del 1 al 6
+					const random = Math.floor(Math.random() * 6) + 1;
 
 					rollDice(random);
 
