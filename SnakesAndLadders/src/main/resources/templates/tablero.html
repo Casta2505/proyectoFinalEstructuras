@@ -15,14 +15,14 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			flex-direction: column;
-			margin: 0;
-			overflow: hidden;
+			flex-direction: row;
+			overflow-x: auto;
+			overflow-y: auto;
 		}
 
 		.cell {
-			width: 40px;
-			height: 40px;
+			width: 50px;
+			height: 50px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -30,15 +30,14 @@
 			border: 1px solid #666;
 			background-color: #fff;
 		}
-
-		#board {
-			display: grid;
-			gap: 2px;
-			border: 2px solid #333;
-			background-color: pink;
-			padding: 5px;
-			position: relative;
-		}
+		#diceContainer {
+            width: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: transparent;
+        }
 
 		.cell {
             width: 50px;
@@ -69,6 +68,7 @@
 			position: fixed;
 			top: 5px;
 			left: 5px;
+			margin-top: 10px;
 		}
 
 		#rollDiceButton img {
@@ -242,15 +242,14 @@
 </head>
 
 <body>
-	<div style="overflow-x: auto; overflow-y: auto;">
-    <div id="board">
+    <div style="overflow-x: auto; overflow-y: auto;">
         <table>
             <tbody>
                 <tr th:each="row : ${matriz}">
                     <td th:each="cell : ${row}">
                         <div class="cell" style="position: relative;">
                             <span th:each="number : ${cell.jugadores}">
-                                <img th:src="@{'/Img/p' + ${number} + '.png'}" style="max-width: 100%; max-height: 100%; position: absolute; top: 0; left: 0;" />
+                                <img th:src="@{'/Img/p' + ${number.piece} + '.png'}" style="max-width: 100%; max-height: 100%; position: absolute; top: 0; left: 0;" />
                             </span>
                             <span th:text="${cell.position}"></span>
                         </div>
@@ -259,88 +258,99 @@
             </tbody>
         </table>
     </div>
-</div>
 	
-
-
-	<span id="numberOfDice" th:text="${diceNumber}" style="display: none;"></span>
-
-	<button id="rollDiceButton" onclick="showDice()" title="Roll the Dice!"> <img src="/Img/diceRoll.png" /> </button>
-
-
-		<div class="dice">
-			<div class="face front"></div>
-			<div class="face back"></div>
-			<div class="face top"></div>
-			<div class="face bottom"></div>
-			<div class="face right"></div>
-			<div class="face left"></div>
-		</div>
-
-		<button class="roll" onclick="throwDice()">
+	<span id="diceNumber" th:text="${diceNumber}" style="display: none;"></span>
+	<div id="diceContainer"></div>
+	<button class="roll" onclick="throwDice()">
 			Roll Dice
 		</button>
-
-
-		<div id="diceResult" style="font-size: 14px; margin-top: 10px;">
-			Resultado del dado:
-		</div>
-
-		<script>
-			function showDice() {
-				var panel = document.getElementById("diceContainer");
-				panel.style.display = panel.style.display === "none" ? "block" : "none";
-			}
-
-			function throwDice() {
-				const dice = document.querySelector('.dice');
-				const rollBtn = document.querySelector('.roll');
-				const diceResult = document.getElementById("diceResult");
-
-				const randomDice = () => {
-					const random = Math.floor(Math.random() * 6) + 1;
-
-					rollDice(random);
-
-					return random;
-				};
-
-				const rollDice = (random) => {
-					dice.style.animation = 'rolling 4s';
-
-					setTimeout(() => {
-						switch (random) {
-							case 1:
-								dice.style.transform = 'rotateX(0deg) rotateY(0deg)';
-								break;
-							case 2:
-								dice.style.transform = 'rotateX(-90deg) rotateY(0deg)';
-								break;
-							case 3:
-								dice.style.transform = 'rotateX(0deg) rotateY(90deg)';
-								break;
-							case 4:
-								dice.style.transform = 'rotateX(0deg) rotateY(-90deg)';
-								break;
-							case 5:
-								dice.style.transform = 'rotateX(90deg) rotateY(0deg)';
-								break;
-							case 6:
-								dice.style.transform = 'rotateX(180deg) rotateY(0deg)';
-								break;
-						}
-
-						dice.style.animation = 'none';
-
-						// Mostrar el resultado en el elemento
-						diceResult.innerHTML = "Resultado del dado: " + random;
-
-					}, 4050); // Tiempo para que la animación se complete
-				};
-
-				rollBtn.addEventListener('click', randomDice);
-			}
-		</script>
 </body>
 
+
+<script>
+function throwDice() {
+    const diceNumber = parseInt(document.getElementById("diceNumber").innerText);
+    const diceContainer = document.getElementById("diceContainer");
+    diceContainer.innerHTML = ''; // Limpiando cualquier dado anterior
+
+    const rollPromises = []; // Array para almacenar las promesas de las animaciones
+    const results = []; // Array para almacenar los resultados de los dados
+
+    for (let i = 0; i < diceNumber; i++) {
+        const dice = document.createElement('div');
+        dice.classList.add('dice');
+        dice.innerHTML = `
+            <div class="face front"></div>
+            <div class="face back"></div>
+            <div class="face top"></div>
+            <div class="face bottom"></div>
+            <div class="face right"></div>
+            <div class="face left"></div>
+        `;
+        diceContainer.appendChild(dice);
+        if (i !== diceNumber - 1) {
+            // Agrega un salto de línea solo si no es el último dado
+            diceContainer.appendChild(document.createElement('br'));
+        }
+        rollPromises.push(rollDice(dice, results)); // Almacenar la promesa de la animación
+    }
+
+    // Cuando todas las promesas de las animaciones se resuelvan, redirigir la página
+    Promise.all(rollPromises).then(() => {
+        const sum = results.reduce((acc, curr) => acc + curr, 0);
+        fetch('/updateBoard', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'resultDices=' + sum
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Error al enviar la suma de los dados al servidor');
+            }
+            return response.json(); // Si esperas una respuesta JSON del servidor
+        }).then(data => {
+            // Maneja la respuesta del servidor si es necesario
+            console.log('Respuesta del servidor:', data);
+            // Aquí podrías redirigir a otra página si lo deseas
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    });
+}
+
+        function rollDice(dice, results) {
+            return new Promise(resolve => {
+                dice.style.animation = 'rolling 4s';
+
+                setTimeout(() => {
+                    const random = Math.floor(Math.random() * 6) + 1;
+                    results.push(random); // Almacenar el resultado del dado
+                    switch (random) {
+                        case 1:
+                            dice.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                            break;
+                        case 2:
+                            dice.style.transform = 'rotateX(-90deg) rotateY(0deg)';
+                            break;
+                        case 3:
+                            dice.style.transform = 'rotateX(0deg) rotateY(90deg)';
+                            break;
+                        case 4:
+                            dice.style.transform = 'rotateX(0deg) rotateY(-90deg)';
+                            break;
+                        case 5:
+                            dice.style.transform = 'rotateX(90deg) rotateY(0deg)';
+                            break;
+                        case 6:
+                            dice.style.transform = 'rotateX(180deg) rotateY(0deg)';
+                            break;
+                    }
+
+                    dice.style.animation = 'none';
+                    resolve(); // Resuelve la promesa cuando la animación haya terminado
+                }, 4050);
+            });
+        }
+    </script>
 </html>

@@ -1,5 +1,6 @@
 package co.edu.unbosque.SnakesAndLadders.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -10,7 +11,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
 @Entity
-public class Game {
+public class Game implements Serializable{
+	private static final long serialVersionUID = 2924024448034625460L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;

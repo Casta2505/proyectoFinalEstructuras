@@ -1,6 +1,9 @@
 package co.edu.unbosque.SnakesAndLadders.model;
 
-public class Components {
+import java.io.Serializable;
+
+public class Components implements Serializable{
+	private static final long serialVersionUID = 2228366698129865215L;
 	int inicio;
 	int fin;
 

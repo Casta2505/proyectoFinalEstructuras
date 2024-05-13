@@ -3,12 +3,13 @@ package co.edu.unbosque.SnakesAndLadders.util.graph;
 import java.io.Serializable;
 import java.util.List;
 
+import co.edu.unbosque.SnakesAndLadders.model.Player;
 import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
 public class Vertex implements Serializable {
 	private static final long serialVersionUID = 43890622329103446L;
 	private Integer position;
-	private List<String> jugadores;
+	private List<Player> jugadores;
 	private MyLinkedList<Edge> adyacentEdges;
 
 	public Vertex() {
@@ -27,11 +28,11 @@ public class Vertex implements Serializable {
 		this.position = position;
 	}
 
-	public List<String> getJugadores() {
+	public List<Player> getJugadores() {
 		return jugadores;
 	}
 
-	public void setJugadores(List<String> jugadores) {
+	public void setJugadores(List<Player> jugadores) {
 		this.jugadores = jugadores;
 	}
 

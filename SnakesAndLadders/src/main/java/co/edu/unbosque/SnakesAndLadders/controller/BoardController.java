@@ -35,8 +35,9 @@ public class BoardController {
 	@Autowired
 	private BoardRepository boardRep;
 
-	@PostMapping("/generateBoard")
-	public String generateBoard(@ModelAttribute("game") Game game, @RequestParam("characters") List<String> characters, Model model) {
+	@PostMapping("/generateBoard2")
+	public String generateBoard2(@ModelAttribute("game") Game game, @RequestParam("characters") List<String> characters,
+			Model model) {
 		Board board = game.getBoard();
 		int height = game.getBoard().getHeight();
 		int width = game.getBoard().getWidth();
@@ -85,14 +86,17 @@ public class BoardController {
 		MyLinkedList<Edge> list = new MyLinkedList<Edge>();
 		logics(0, total, snakeLadderMap, graph, dice, list);
 		// -------------------------------------------
+		for (int i = 0; i < game.getPlayerNum(); i++) {
+			game.getPlayers().get(i).setPiece(characters.get(i));
+		}
+		graph.getListOfNodes().get(0).setJugadores(game.getPlayers());
 		board.setGraphData(serializeGraph(graph));
 		board.setHeight(height);
 		board.setWidth(width);
 		board.setLadders(ladders);
 		board.setSnakes(snakes);
-		
-		generateBoardMatrix(board, model,characters);
-		model.addAttribute("diceNumber", dice/6);
+		generateBoardMatrix(game, model);
+		model.addAttribute("diceNumber", dice / 6);
 		return "tablero";
 
 	}
@@ -156,7 +160,7 @@ public class BoardController {
 		}
 		Vertex v = new Vertex();
 		v.setAdyacentEdges(new MyLinkedList<Edge>());
-		v.setJugadores(new ArrayList<String>());
+		v.setJugadores(new ArrayList<Player>());
 		v.setPosition(i + 1);
 		graph.addVertex(v);
 		i++;
@@ -217,11 +221,134 @@ public class BoardController {
 		}
 	}
 
-	private void generateBoardMatrix(Board board, Model model, List<String> characters) {
-		int height = board.getHeight();
-		int width = board.getWidth();
-		Graph g = deserializeGraph(board.getGraphData());
-		g.getListOfNodes().get(0).setJugadores(characters);
+	@PostMapping("/generateBoard")
+	public String generateBoard(@ModelAttribute("game") Game game, @RequestParam("characters") List<String> characters,
+			Model model) {
+		Board board = game.getBoard();
+		int height = game.getBoard().getHeight();
+		int width = game.getBoard().getWidth();
+		String difficulty = game.getDifficulty();
+		int dice = 0;
+		System.out.println(dice);
+		int total = height * width;
+		Graph graph = new Graph();
+		graph.setListOfNodes(new MyLinkedList<Vertex>());
+		int totalLaddersAndSnakes = 0;
+		if (difficulty.equals("Easy")) {
+			totalLaddersAndSnakes = (int) (total * 0.02);
+			dice=3;
+		} else if (difficulty.equals("Medium")) {
+			totalLaddersAndSnakes = (int) (total * 0.05);
+			dice=2;
+		} else if (difficulty.equals("Tricky")) {
+			dice=1;
+			totalLaddersAndSnakes = (int) (total * 0.07);
+		} else {
+			dice=1;
+			totalLaddersAndSnakes = (int) (total * 0.1);
+		}
+		game.setDiceNumber(dice);
+		MyLinkedList<Components> snakes = new MyLinkedList<>();
+		MyLinkedList<Components> ladders = new MyLinkedList<>();
+		Random random = new Random();
+		HashSet<Integer> usedPositions = new HashSet<>();
+		for (int i = 0; i < totalLaddersAndSnakes; i++) {
+			int start;
+			int end;
+			do {
+				start = random.nextInt(total) + 1;
+				do {
+					end = random.nextInt(total) + 1;
+				} while (end == start || usedPositions.contains(end) || end >= start || end <= 1);
+			} while (usedPositions.contains(start));
+			usedPositions.add(start);
+			usedPositions.add(end);
+			Components snake = new Components(start, end);
+			snakes.add(snake);
+		}
+		for (int i = 0; i < totalLaddersAndSnakes; i++) {
+			int start;
+			int end;
+			do {
+				start = random.nextInt(total) + 1;
+				do {
+					end = random.nextInt(total) + 1;
+				} while (end == start || usedPositions.contains(end) || end <= start || end >= total);
+			} while (usedPositions.contains(start));
+			usedPositions.add(start);
+			usedPositions.add(end);
+			Components ladder = new Components(start, end);
+			ladders.add(ladder);
+		}
+		HashMap<Integer, Integer> snakeLadderMap = new HashMap<>();
+		System.out.println("ladders");
+		for (int i = 0; i < ladders.size(); i++) {
+			System.out.println(ladders.get(i).getInicio() + " ... " + ladders.get(i).getFin());
+			snakeLadderMap.put(ladders.get(i).getInicio(), ladders.get(i).getFin());
+		}
+		System.out.println("snakes");
+		for (int i = 0; i < snakes.size(); i++) {
+			System.out.println(snakes.get(i).getInicio() + " ... " + snakes.get(i).getFin());
+			snakeLadderMap.put(snakes.get(i).getInicio(), snakes.get(i).getFin());
+		}
+		// -------------------------------------------
+		// LOGICA AGREGAR ARISTAS, ESCALERAS Y SERPIENTES
+		if (dice == 1) {
+			dice = 6;
+		} else if (dice == 2) {
+			dice = 12;
+		} else {
+			dice = 18;
+		}
+		for (int i = 0; i < total; i++) {
+			Vertex v = new Vertex();
+			v.setAdyacentEdges(new MyLinkedList<Edge>());
+			v.setJugadores(new ArrayList<Player>());
+			v.setPosition(i + 1);
+			graph.addVertex(v);
+		}
+		for (int i = 0; i < total; i++) {
+			Vertex aux = graph.getListOfNodes().get(i);
+			int possible = Math.min(dice, total - i - 1);
+			for (int j = 1; j <= possible; j++) {
+				int destination = i + j + 1;
+				if (destination <= total) {
+					if (snakeLadderMap.containsKey(destination)) {
+						destination = snakeLadderMap.get(destination);
+					}
+					if (destination - 1 < graph.getListOfNodes().size()) {
+						aux.addEdge(new Edge(aux, graph.getListOfNodes().get(destination - 1), 1));
+					}
+				}
+			}
+		}
+		// -------------------------------------------
+		for (int i = 0; i < game.getPlayerNum(); i++) {
+			game.getPlayers().get(i).setPiece(characters.get(i));
+		}
+		graph.getListOfNodes().get(0).setJugadores(game.getPlayers());
+		board.setGraphData(serializeGraph(graph));
+		board.setHeight(height);
+		board.setWidth(width);
+		board.setLadders(ladders);
+		board.setSnakes(snakes);
+		generateBoardMatrix(game, model);
+		System.out.println(dice/6);
+		model.addAttribute("diceNumber", dice / 6);
+		return "tablero";
+	}
+
+	@PostMapping("/updateBoard")
+	public String updateBoard(@ModelAttribute("game") Game game, @RequestParam("resultDices") int resultDices,
+			Model model) {
+		
+		return "tablero";
+	}
+
+	private void generateBoardMatrix(Game game, Model model) {
+		int height = game.getBoard().getHeight();
+		int width = game.getBoard().getWidth();
+		Graph g = deserializeGraph(game.getBoard().getGraphData());
 		Vertex[][] matriz = new Vertex[height][width];
 		boolean izquierdaDerecha = true;
 		int contador = 0;
@@ -289,5 +416,4 @@ public class BoardController {
 			}
 		}
 	}
-
 }

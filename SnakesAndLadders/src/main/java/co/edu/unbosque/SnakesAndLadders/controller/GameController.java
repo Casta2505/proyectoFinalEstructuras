@@ -45,17 +45,13 @@ public class GameController {
 	@PostMapping("/updateDifficulty")
 	public String updateDifficulty(@ModelAttribute("game") Game game, @RequestParam("difficulty") String difficulty,
 			Model model) {
-		System.out.println(game.getDifficulty());
 		game.setDifficulty(difficulty);
-		System.out.println(game.getDifficulty());
 		return "personalize";
 	}
 
 	@PostMapping("/updateThemes")
 	public String updateThemes(@ModelAttribute("game") Game game, @RequestParam("themes") String theme, Model model) {
-		System.out.println(game.getTheme());
 		game.setTheme(theme);
-		System.out.println(game.getTheme());
 		return "personalize";
 	}
 
@@ -66,7 +62,6 @@ public class GameController {
 			model.addAttribute("mensaje", "Select theme and diffilculty before create players");
 			return "personalize";
 		}
-		System.out.println(height + "  " + width);
 		game.getBoard().setHeight(height);
 		game.getBoard().setWidth(width);
 		if (player.equals("two")) {
