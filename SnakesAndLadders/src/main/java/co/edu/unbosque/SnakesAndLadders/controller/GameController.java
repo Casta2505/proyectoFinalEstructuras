@@ -112,8 +112,8 @@ public class GameController {
 	@PostMapping("/SelectTwoCharacters")
 	public String getCharacters(@ModelAttribute("game") Game game, Model model,
 			@RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name) {
-		Player player1 = new Player(player1Name, 1, true, game);
-		Player player2 = new Player(player2Name, 1, false, game);
+		Player player1 = new Player(player1Name, 1, true, game,1);
+		Player player2 = new Player(player2Name, 1, false, game,2);
 		game.setPlayers(Arrays.asList(player1, player2));
 		model.addAttribute("players", 2);
 		return "characters";
@@ -123,9 +123,9 @@ public class GameController {
 	public String getCharacters(@ModelAttribute("game") Game game, Model model,
 			@RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name,
 			@RequestParam("player3Name") String player3Name) {
-		Player player1 = new Player(player1Name, 1, true, game);
-		Player player2 = new Player(player2Name, 1, false, game);
-		Player player3 = new Player(player3Name, 1, false, game);
+		Player player1 = new Player(player1Name, 1, true, game,1);
+		Player player2 = new Player(player2Name, 1, false, game,2);
+		Player player3 = new Player(player3Name, 1, false, game,3);
 		game.setPlayers(Arrays.asList(player1, player2, player3));
 		model.addAttribute("players", 3);
 		return "characters";
@@ -135,10 +135,10 @@ public class GameController {
 	public String getCharacters(@ModelAttribute("game") Game game, Model model,
 			@RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name,
 			@RequestParam("player3Name") String player3Name, @RequestParam("player4Name") String player4Name) {
-		Player player1 = new Player(player1Name, 1, true, game);
-		Player player2 = new Player(player2Name, 1, false, game);
-		Player player3 = new Player(player3Name, 1, false, game);
-		Player player4 = new Player(player4Name, 1, false, game);
+		Player player1 = new Player(player1Name, 1, true, game,1);
+		Player player2 = new Player(player2Name, 1, false, game,2);
+		Player player3 = new Player(player3Name, 1, false, game,3);
+		Player player4 = new Player(player4Name, 1, false, game,4);
 		game.setPlayers(Arrays.asList(player1, player2, player3, player4));
 		model.addAttribute("players", 4);
 		return "characters";

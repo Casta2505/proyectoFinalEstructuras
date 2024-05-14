@@ -229,22 +229,21 @@ public class BoardController {
 		int width = game.getBoard().getWidth();
 		String difficulty = game.getDifficulty();
 		int dice = 0;
-		System.out.println(dice);
 		int total = height * width;
 		Graph graph = new Graph();
 		graph.setListOfNodes(new MyLinkedList<Vertex>());
 		int totalLaddersAndSnakes = 0;
 		if (difficulty.equals("Easy")) {
 			totalLaddersAndSnakes = (int) (total * 0.02);
-			dice=3;
+			dice = 3;
 		} else if (difficulty.equals("Medium")) {
 			totalLaddersAndSnakes = (int) (total * 0.05);
-			dice=2;
+			dice = 2;
 		} else if (difficulty.equals("Tricky")) {
-			dice=1;
+			dice = 1;
 			totalLaddersAndSnakes = (int) (total * 0.07);
 		} else {
-			dice=1;
+			dice = 1;
 			totalLaddersAndSnakes = (int) (total * 0.1);
 		}
 		game.setDiceNumber(dice);
@@ -328,12 +327,12 @@ public class BoardController {
 		}
 		graph.getListOfNodes().get(0).setJugadores(game.getPlayers());
 		board.setGraphData(serializeGraph(graph));
+		game.setPlayerTurn(game.getPlayers().get(0));
 		board.setHeight(height);
 		board.setWidth(width);
 		board.setLadders(ladders);
 		board.setSnakes(snakes);
 		generateBoardMatrix(game, model);
-		System.out.println(dice/6);
 		model.addAttribute("diceNumber", dice / 6);
 		return "tablero";
 	}
@@ -341,7 +340,43 @@ public class BoardController {
 	@PostMapping("/updateBoard")
 	public String updateBoard(@ModelAttribute("game") Game game, @RequestParam("resultDices") int resultDices,
 			Model model) {
-		
+		// PRIMERO LO ELIMINO DE LA LISTA DEL VERTEX
+		Graph g = deserializeGraph(game.getBoard().getGraphData());
+		boolean playerFound = false;
+
+		for (int i = 0; i < g.getListOfNodes().size(); i++) {
+		    List<Player> list = new ArrayList<>(g.getListOfNodes().get(i).getJugadores()); // Crear una copia de la lista original
+		    for (int j = 0; j < list.size(); j++) {
+		        if (game.getPlayerTurn().getOrder() == list.get(j).getOrder()) {
+		            list.remove(j);
+		            playerFound = true;
+		            break;
+		        }
+		    }
+		    if (playerFound) {
+		        g.getListOfNodes().get(i).setJugadores(list); // Actualizar la lista original con la lista modificada
+		        break;
+		    }
+		}
+		// LUEGO CONSULTO A QUE VERTEX TENGO QUE IR
+		MyLinkedList<Edge> list = g.getListOfNodes().get(game.getPlayerTurn().getBoardPosition() - 1)
+				.getAdyacentEdges();
+		Vertex aux2 = list.get(resultDices - 1).getDestination();
+		// BUSCO EL VERTEX Y LO PONGO EN LA LISTA Y ACTUALIZAR
+		game.getPlayerTurn().setBoardPosition(aux2.getPosition());
+		g.getListOfNodes().get(aux2.getPosition() - 1).getJugadores().add(game.getPlayerTurn());
+		game.getBoard().setGraphData(serializeGraph(g));
+		// ACTUALIZO EL TURNO AL NUEVO JUGADOR
+		int aux;
+		if(game.getPlayerTurn().getOrder()+1>game.getPlayers().size()) {
+			aux = 0;
+		}else {
+			aux = game.getPlayerTurn().getOrder();
+		}
+		game.setPlayerTurn(game.getPlayers().get(aux));
+		// ACTUALIZAMOS EL TABLERO
+		generateBoardMatrix(game, model);
+		model.addAttribute("diceNumber", game.getDiceNumber());
 		return "tablero";
 	}
 

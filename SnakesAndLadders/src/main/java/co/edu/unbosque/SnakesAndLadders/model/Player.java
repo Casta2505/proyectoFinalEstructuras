@@ -9,28 +9,35 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Player implements Serializable{
-	private static final long serialVersionUID = -7770179119256603699L;
+public class Player implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 	private String name;
+	private int playerOrder;
 	private String piece;
 	private int boardPosition;
-	private boolean turn;
 	@ManyToOne
 	private Game game;
-	
-	public Player() {
 
+	public Player() {
+		
 	}
 
-	public Player(String name, int boardPosition, boolean turn, Game game) {
+	public Player(String name, int boardPosition, boolean turn, Game game, int playerOrder) {
 		super();
 		this.name = name;
 		this.boardPosition = boardPosition;
-		this.turn = turn;
 		this.game = game;
+		this.playerOrder = playerOrder;
+	}
+
+	public int getOrder() {
+		return playerOrder;
+	}
+
+	public void setOrder(int playerOrder) {
+		this.playerOrder = playerOrder;
 	}
 
 	public Integer getId() {
@@ -67,13 +74,5 @@ public class Player implements Serializable{
 
 	public void setBoardPosition(int boardPosition) {
 		this.boardPosition = boardPosition;
-	}
-
-	public boolean isTurn() {
-		return turn;
-	}
-
-	public void setTurn(boolean turn) {
-		this.turn = turn;
 	}
 }
