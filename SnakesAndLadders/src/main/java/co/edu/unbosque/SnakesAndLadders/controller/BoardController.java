@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import co.edu.unbosque.SnakesAndLadders.repository.BoardRepository;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Edge;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Graph;
+import co.edu.unbosque.SnakesAndLadders.util.graph.ShortestPathBFS;
 import co.edu.unbosque.SnakesAndLadders.util.graph.Vertex;
 import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
@@ -95,7 +96,7 @@ public class BoardController {
 		board.setWidth(width);
 		board.setLadders(ladders);
 		board.setSnakes(snakes);
-		generateBoardMatrix(game, model);
+		generateBoardMatrix(game, model,snakes, ladders);
 		model.addAttribute("diceNumber", dice / 6);
 		return "tablero";
 
@@ -332,7 +333,7 @@ public class BoardController {
 		board.setWidth(width);
 		board.setLadders(ladders);
 		board.setSnakes(snakes);
-		generateBoardMatrix(game, model);
+		generateBoardMatrix(game, model,snakes,ladders);
 		model.addAttribute("diceNumber", dice / 6);
 		return "tablero";
 	}
@@ -375,15 +376,27 @@ public class BoardController {
 		}
 		game.setPlayerTurn(game.getPlayers().get(aux));
 		// ACTUALIZAMOS EL TABLERO
-		generateBoardMatrix(game, model);
+		generateBoardMatrix(game, model,game.getBoard().getSnakes(),game.getBoard().getLadders());
 		model.addAttribute("diceNumber", game.getDiceNumber());
 		return "tablero";
 	}
 
-	private void generateBoardMatrix(Game game, Model model) {
+	private void generateBoardMatrix(Game game, Model model, MyLinkedList<Components> snakes, MyLinkedList<Components> ladders) {
 		int height = game.getBoard().getHeight();
 		int width = game.getBoard().getWidth();
 		Graph g = deserializeGraph(game.getBoard().getGraphData());
+		//METHOD TO SHOW SNAKES AND LADDERS
+		showSnakesAndLadders(g,snakes,ladders);
+		
+		
+        ShortestPathBFS BFS = new ShortestPathBFS();
+        List<Vertex> shortestPath = BFS.shortestPath(g, g.getListOfNodes().get(game.getPlayerTurn().getBoardPosition()-1), g.getListOfNodes().get(g.getListOfNodes().size()-1));
+        System.out.print(shortestPath.get(0).getPosition());
+        for (int i = 1; i < shortestPath.size(); i++) {
+            System.out.print(" -> " + shortestPath.get(i).getPosition());
+        }
+        System.out.println();
+        
 		Vertex[][] matriz = new Vertex[height][width];
 		boolean izquierdaDerecha = true;
 		int contador = 0;
@@ -400,6 +413,18 @@ public class BoardController {
 			izquierdaDerecha = !izquierdaDerecha;
 		}
 		model.addAttribute("matriz", matriz);
+	}
+
+	private void showSnakesAndLadders(Graph g, MyLinkedList<Components> snakes, MyLinkedList<Components> ladders) {
+		for (int i = 0; i < snakes.size(); i++) {
+			g.getListOfNodes().get(snakes.get(i).getInicio()-1).setSnakeOrLadder("sh");
+			g.getListOfNodes().get(snakes.get(i).getFin()-1).setSnakeOrLadder("st");
+		}
+		for (int i = 0; i < ladders.size(); i++) {
+			g.getListOfNodes().get(ladders.get(i).getInicio()-1).setSnakeOrLadder("lt");
+			g.getListOfNodes().get(ladders.get(i).getFin()-1).setSnakeOrLadder("lh");
+		}
+		
 	}
 
 	public byte[] serializeGraph(Graph graph) {

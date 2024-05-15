@@ -10,10 +10,19 @@ public class Vertex implements Serializable {
 	private static final long serialVersionUID = 43890622329103446L;
 	private Integer position;
 	private List<Player> jugadores;
+	private String snakeOrLadder;
 	private MyLinkedList<Edge> adyacentEdges;
 
 	public Vertex() {
 		this.adyacentEdges = new MyLinkedList<Edge>();
+	}
+
+	public String getSnakeOrLadder() {
+		return snakeOrLadder;
+	}
+
+	public void setSnakeOrLadder(String snakeOrLadder) {
+		this.snakeOrLadder = snakeOrLadder;
 	}
 
 	public void addEdge(Edge e) {

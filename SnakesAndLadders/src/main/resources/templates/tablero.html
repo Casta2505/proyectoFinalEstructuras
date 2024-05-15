@@ -251,6 +251,9 @@
                             <span th:each="number : ${cell.jugadores}">
                                 <img th:src="@{'/Img/p' + ${number.piece} + '.png'}" style="max-width: 100%; max-height: 100%; position: absolute; top: 0; left: 0;" />
                             </span>
+                            <span th:if="${cell.snakeOrLadder != null}">
+                            <img th:src="@{'/Img/' + ${cell.snakeOrLadder} + '.png'}" style="max-width: 100%; max-height: 100%; position: absolute; top: 0; left: 0;" />
+                        	</span>
                             <span th:text="${cell.position}"></span>
                         </div>
                     </td>
