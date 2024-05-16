@@ -361,7 +361,7 @@ public class BoardController {
 			game.getPlayerTurn().setBoardPosition(aux2.getPosition());
 			g.getListOfNodes().get(aux2.getPosition() - 1).getJugadores().add(save);
 			game.getBoard().setGraphData(g);
-		} else if ((resultDices + game.getPlayerTurn().getBoardPosition()) == g.getListOfNodes().size()) {
+		} else if ((resultDices + game.getPlayerTurn().getBoardPosition()) >= g.getListOfNodes().size()) {
 			return "ganador";
 		}
 		// ACTUALIZO EL TURNO AL NUEVO JUGADOR
