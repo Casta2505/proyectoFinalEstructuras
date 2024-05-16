@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import co.edu.unbosque.SnakesAndLadders.model.*;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import co.edu.unbosque.SnakesAndLadders.repository.BoardRepository;
@@ -96,7 +98,7 @@ public class BoardController {
 		board.setWidth(width);
 		board.setLadders(ladders);
 		board.setSnakes(snakes);
-		generateBoardMatrix(game, model,snakes, ladders);
+		generateBoardMatrix(game, model, snakes, ladders);
 		model.addAttribute("diceNumber", dice / 6);
 		return "tablero";
 
@@ -327,13 +329,16 @@ public class BoardController {
 			game.getPlayers().get(i).setPiece(characters.get(i));
 		}
 		graph.getListOfNodes().get(0).setJugadores(game.getPlayers());
-		board.setGraphData(serializeGraph(graph));
+		byte[] a = serializeGraph(graph);
+		board.setGraphData(a);
+		double sizeInMegabytes = (double) a.length * Byte.SIZE / (8 * 1024 * 1024);
+		System.out.println("El peso del arreglo inicial es de bytes es: " + sizeInMegabytes + " MB.");
 		game.setPlayerTurn(game.getPlayers().get(0));
 		board.setHeight(height);
 		board.setWidth(width);
 		board.setLadders(ladders);
 		board.setSnakes(snakes);
-		generateBoardMatrix(game, model,snakes,ladders);
+		generateBoardMatrix(game, model, snakes, ladders);
 		model.addAttribute("diceNumber", dice / 6);
 		return "tablero";
 	}
@@ -341,63 +346,73 @@ public class BoardController {
 	@PostMapping("/updateBoard")
 	public String updateBoard(@ModelAttribute("game") Game game, @RequestParam("resultDices") int resultDices,
 			Model model) {
-		// PRIMERO LO ELIMINO DE LA LISTA DEL VERTEX
 		Graph g = deserializeGraph(game.getBoard().getGraphData());
-		boolean playerFound = false;
-
-		for (int i = 0; i < g.getListOfNodes().size(); i++) {
-		    List<Player> list = new ArrayList<>(g.getListOfNodes().get(i).getJugadores()); // Crear una copia de la lista original
-		    for (int j = 0; j < list.size(); j++) {
-		        if (game.getPlayerTurn().getOrder() == list.get(j).getOrder()) {
-		            list.remove(j);
-		            playerFound = true;
-		            break;
-		        }
-		    }
-		    if (playerFound) {
-		        g.getListOfNodes().get(i).setJugadores(list); // Actualizar la lista original con la lista modificada
-		        break;
-		    }
+		int weNeedMax = g.getListOfNodes().size() -game.getDiceNumber();
+		if ((resultDices+game.getPlayerTurn().getBoardPosition()) < weNeedMax) {
+			// PRIMERO LO ELIMINO DE LA LISTA DEL VERTEX
+			boolean playerFound = false;
+			Player save = new Player();
+			for (int i = 0; i < g.getListOfNodes().size(); i++) {
+				List<Player> list = new ArrayList<>(g.getListOfNodes().get(i).getJugadores());
+				for (int j = 0; j < list.size(); j++) {
+					if (game.getPlayerTurn().getOrder() == list.get(j).getOrder()) {
+						save = list.get(j);
+						list.remove(j);
+						playerFound = true;
+						break;
+					}
+				}
+				if (playerFound) {
+					g.getListOfNodes().get(i).setJugadores(list);
+					break;
+				}
+			}
+			// LUEGO CONSULTO A QUE VERTEX TENGO QUE IR
+			MyLinkedList<Edge> list = g.getListOfNodes().get(game.getPlayerTurn().getBoardPosition() - 1)
+					.getAdyacentEdges();
+			Vertex aux2 = list.get(resultDices - 1).getDestination();
+			// BUSCO EL VERTEX Y LO PONGO EN LA LISTA Y ACTUALIZAR
+			game.getPlayerTurn().setBoardPosition(aux2.getPosition());
+			g.getListOfNodes().get(aux2.getPosition() - 1).getJugadores().add(save);
+			game.getBoard().setGraphData(serializeGraph(g));
+		}else if((resultDices+game.getPlayerTurn().getBoardPosition())==g.getListOfNodes().size()) {
+			return "ganador";
 		}
-		// LUEGO CONSULTO A QUE VERTEX TENGO QUE IR
-		MyLinkedList<Edge> list = g.getListOfNodes().get(game.getPlayerTurn().getBoardPosition() - 1)
-				.getAdyacentEdges();
-		Vertex aux2 = list.get(resultDices - 1).getDestination();
-		// BUSCO EL VERTEX Y LO PONGO EN LA LISTA Y ACTUALIZAR
-		game.getPlayerTurn().setBoardPosition(aux2.getPosition());
-		g.getListOfNodes().get(aux2.getPosition() - 1).getJugadores().add(game.getPlayerTurn());
-		game.getBoard().setGraphData(serializeGraph(g));
 		// ACTUALIZO EL TURNO AL NUEVO JUGADOR
 		int aux;
-		if(game.getPlayerTurn().getOrder()+1>game.getPlayers().size()) {
+		if (game.getPlayerTurn().getOrder() + 1 > game.getPlayers().size()) {
 			aux = 0;
-		}else {
+		} else {
 			aux = game.getPlayerTurn().getOrder();
 		}
 		game.setPlayerTurn(game.getPlayers().get(aux));
 		// ACTUALIZAMOS EL TABLERO
-		generateBoardMatrix(game, model,game.getBoard().getSnakes(),game.getBoard().getLadders());
+		generateBoardMatrix(game, model, game.getBoard().getSnakes(), game.getBoard().getLadders());
 		model.addAttribute("diceNumber", game.getDiceNumber());
 		return "tablero";
 	}
 
-	private void generateBoardMatrix(Game game, Model model, MyLinkedList<Components> snakes, MyLinkedList<Components> ladders) {
+	public boolean overBoard(@ModelAttribute("game") Game game, @RequestParam("resultDices") int resultDices) {
+		Graph g = deserializeGraph(game.getBoard().getGraphData());
+		int playerPos = game.getPlayerTurn().getBoardPosition();
+		int boardSize = g.getListOfNodes().size();
+		int weNeedMax = boardSize - playerPos;
+		if (resultDices > weNeedMax) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private void generateBoardMatrix(Game game, Model model, MyLinkedList<Components> snakes,
+			MyLinkedList<Components> ladders) {
 		int height = game.getBoard().getHeight();
 		int width = game.getBoard().getWidth();
 		Graph g = deserializeGraph(game.getBoard().getGraphData());
-		//METHOD TO SHOW SNAKES AND LADDERS
-		showSnakesAndLadders(g,snakes,ladders);
-		
-		
-        ShortestPathBFS BFS = new ShortestPathBFS();
-        List<Vertex> shortestPath = BFS.shortestPath(g, g.getListOfNodes().get(game.getPlayerTurn().getBoardPosition()-1), g.getListOfNodes().get(g.getListOfNodes().size()-1));
-        System.out.print(shortestPath.get(0).getPosition());
-        for (int i = 1; i < shortestPath.size(); i++) {
-            System.out.print(" -> " + shortestPath.get(i).getPosition());
-        }
-        System.out.println();
-        
+		// METHOD TO SHOW SNAKES AND LADDERS
+		showSnakesAndLadders(g, snakes, ladders);
 		Vertex[][] matriz = new Vertex[height][width];
+
 		boolean izquierdaDerecha = true;
 		int contador = 0;
 		for (int i = height - 1; i >= 0; i--) {
@@ -415,65 +430,53 @@ public class BoardController {
 		model.addAttribute("matriz", matriz);
 	}
 
+	@PostMapping("/actualizarAviso")
+	public @ResponseBody String actualizarAviso(@ModelAttribute("game") Game game, Model model) {
+		ShortestPathBFS BFS = new ShortestPathBFS();
+		Graph g = deserializeGraph(game.getBoard().getGraphData());
+		List<Vertex> shortestPath = BFS.shortestPath(g,
+				g.getListOfNodes().get(game.getPlayerTurn().getBoardPosition() - 1),
+				g.getListOfNodes().get(g.getListOfNodes().size() - 1));
+		String mensaje = shortestPath.get(0).getPosition() + "";
+		for (int i = 1; i < shortestPath.size(); i++) {
+			mensaje += " -> " + shortestPath.get(i).getPosition();
+		}
+		return mensaje;
+	}
+
 	private void showSnakesAndLadders(Graph g, MyLinkedList<Components> snakes, MyLinkedList<Components> ladders) {
 		for (int i = 0; i < snakes.size(); i++) {
-			g.getListOfNodes().get(snakes.get(i).getInicio()-1).setSnakeOrLadder("sh");
-			g.getListOfNodes().get(snakes.get(i).getFin()-1).setSnakeOrLadder("st");
+			g.getListOfNodes().get(snakes.get(i).getInicio() - 1).setSnakeOrLadder("sh");
+			g.getListOfNodes().get(snakes.get(i).getFin() - 1).setSnakeOrLadder("st");
 		}
 		for (int i = 0; i < ladders.size(); i++) {
-			g.getListOfNodes().get(ladders.get(i).getInicio()-1).setSnakeOrLadder("lt");
-			g.getListOfNodes().get(ladders.get(i).getFin()-1).setSnakeOrLadder("lh");
+			g.getListOfNodes().get(ladders.get(i).getInicio() - 1).setSnakeOrLadder("lt");
+			g.getListOfNodes().get(ladders.get(i).getFin() - 1).setSnakeOrLadder("lh");
 		}
-		
+
 	}
 
 	public byte[] serializeGraph(Graph graph) {
-		ByteArrayOutputStream bos = null;
-		ObjectOutputStream oos = null;
-		try {
-			bos = new ByteArrayOutputStream();
-			oos = new ObjectOutputStream(bos);
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos)) {
 			oos.writeObject(graph);
 			oos.flush();
-			return bos.toByteArray();
-		} catch (Exception e) {
+			byte[] serializedGraph = bos.toByteArray();
+			return serializedGraph;
+		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
-		} finally {
-			try {
-				if (oos != null) {
-					oos.close();
-				}
-				if (bos != null) {
-					bos.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
-	public Graph deserializeGraph(byte[] graph) {
-		ByteArrayInputStream bis = null;
-		ObjectInputStream ois = null;
-		try {
-			bis = new ByteArrayInputStream(graph);
-			ois = new ObjectInputStream(bis);
-			return (Graph) ois.readObject();
-		} catch (Exception e) {
+	public Graph deserializeGraph(byte[] serializedGraph) {
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(serializedGraph);
+				ObjectInputStream ois = new ObjectInputStream(bis)) {
+			Graph deserializedGraph = (Graph) ois.readObject();
+			return deserializedGraph;
+		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			return null;
-		} finally {
-			try {
-				if (ois != null) {
-					ois.close();
-				}
-				if (bis != null) {
-					bis.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }

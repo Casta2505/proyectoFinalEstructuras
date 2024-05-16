@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podio</title>
+    <link href="https://fonts.googleapis.com/css?family=Chewy|Orbitron" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Chewy', cursive;
+            background-color: black;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            position: relative;
+            
+        }
+
+        #confetti-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .confetti {
+            height: 10px;
+            width: 10px; 
+            border-radius: 50%;
+            position: absolute;
+            z-index: 5;
+        }
+
+        .container {
+            position: relative;
+            bottom: 10px;
+            z-index: 2;
+            top: 20%;
+        }
+
+        .podium {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            width: 80%;
+            max-width: 800px;
+            margin-top: 390px; /* Aumentar el margen superior para bajar el podio */
+            margin-left: 3%; /* Mover el podio a la derecha */
+            animation: slideIn 1s forwards;
+            position: relative;
+            z-index: 2;
+        }
+
+        .podium__base {
+            flex: 1;
+            border-radius: 10px;
+            margin: 0 10px;
+            position: relative;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Añadir sombra para darle más estilo */
+            transition: transform 0.3s ease;
+        }
+
+        .podium__base:hover {
+            transform: translateY(-10px); /* Efecto hover para levantar el podio */
+        }
+
+        .first-place {
+            height: 290px;
+            background: linear-gradient(to bottom, #BD4F6C 0%, #9e2847 100%);
+        }
+
+        .second-place {
+            height: 250px;
+            background: linear-gradient(to bottom, #F0CF65 0%, #d5a943 100%);
+        }
+
+        .third-place {
+            height: 180px;
+            background: linear-gradient(to bottom, #5E9EAD 0%, #4a7a8a 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fallDown {
+            0% {
+                top: -50px;
+            }
+            100% {
+                top: 0;
+            }
+        }
+
+        .flag {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            animation: fallDown 1s forwards;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3); /* Añadir sombra a las banderas */
+        }
+
+        .first-flag {
+            background-color: #BD4F6C;
+            color: #fff;
+        }
+
+        .second-flag {
+            background-color: #F0CF65;
+            color: #000;
+        }
+
+        .third-flag {
+            background-color: #5E9EAD;
+            color: #fff;
+        }
+
+        .gif-decorative {
+            position: relative;
+            top: 10%;
+            width: 600px;
+            height: auto;
+        }
+
+        .winners-banner {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            color: #BD4F6C;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+        }
+        
+        .winner-sign {
+    position: absolute;
+    top: -100px; /* Inicia arriba de la pantalla */
+    left: 50%; /* Centrado horizontalmente */
+    transform: translateX(-50%);
+    font-size: 36px;
+    font-weight: bold;
+    color: #ffffff;
+    background-image: url('/Img/gifwin.gif'); /* Ruta a tu GIF */
+    background-size: auto; /* Ajusta el tamaño del fondo */
+    padding: 10px 20px;
+    border-radius: 10px;
+    animation: slideDown 2s forwards; /* Animación para bajar */
+    z-index: 6; /* Asegúrate de que esté encima del podio */
+    height: 30%;
+    width: 30%;
+    ;
+}
+
+@keyframes slideDown {
+    from {
+        top: -100px; /* Empieza arriba */
+    }
+    to {
+        top: 20px; /* Termina a 20px del borde superior */
+    }
+}
+.containerbutton {
+        position: absolute;
+        width: 100%;
+        height: 55%;
+        font-family: 'Chewy', cursive;
+        top: 5%;
+        left: 5%;
+    }
+
+    .transparent-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: yellow;
+        color: black;
+        border: 2px solid yellow;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 18px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .transparent-button:hover {
+        background-color: transparent;
+        color: yellow;
+    }
+    </style>
+</head>
+<body>
+	<div class="containerbutton">
+    <a href="/goBackMenu" class="transparent-button">Menu</a>
+</div>
+	<div class="winner-sign"></div>
+    <div id="confetti-container"></div>
+    <div class="winners-banner"></div>
+   
+
+    <div class="podium">
+        <div class="podium__base second-place">
+            <div class="flag second-flag">2</div>
+        </div>
+        <div class="podium__base first-place">
+            <div class="flag first-flag">1</div>
+        </div>
+        <div class="podium__base third-place">
+            <div class="flag third-flag">3</div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var vw = $(window).width(),
+                vh = $(window).height(),
+                num = vw / 20;
+
+            num = Math.max(num, 50);
+
+            function random(high) {
+                return Math.random() * high;
+            }
+
+            for (var i = 0; i <= num; i++) {
+                $('#confetti-container').append("<div class='confetti' style='background-color: rgb(" + Math.round(random(255)) + "," + Math.round(random(255)) + "," + Math.round(random(255)) + ");'></div>");
+            }
+
+            var $confetti = $('.confetti'),
+                tl = gsap.timeline();
+
+            tl.add('start');
+
+            $confetti.each(function (index, element) {
+                var dot = $(this),
+                    dotTL = gsap.timeline();
+
+                //set each confetti piece
+                dotTL.set(dot, {
+                    x: random(vw),
+                    y: random(-vh) - 10,
+                    scale: random(1) + 1,
+                    opacity: random(1),
+                    transformStyle: "preserve-3d"
+                });
+
+                tl.to(dot, {
+                    duration: 6,
+                    y: vh + 100,
+                    ease: "sine.inOut",
+                    repeat: -1,
+                    opacity: random(2),
+                    delay: -6,
+                    scale: random(1) + 1
+                }, random(6), 'start');
+
+                tl.to(dot, {
+                    duration: 2,
+                    x: '+=' + random(100),
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                }, random(2), 'start');
+
+                tl.to(dot, {
+                    duration: random(4),
+                    repeat: -1,
+                    yoyo: true,
+                    rotationX: random(270),
+                    rotationY: random(270),
+                    ease: "sine.inOut"
+                }, random(2), 'start');
+            });
+
+            // Animation for the winners banner
+            gsap.fromTo(".winners-banner", {
+                y: -100, // Starting position (above the screen)
+                opacity: 0 // Starting opacity
+            }, {
+                y: 50, // Ending position (slightly above the center)
+                opacity: 1, // Ending opacity
+                duration: 1.5, // Duration of the animation
+                ease: "bounce.out" // Easing function for a bounce effect
+            });
+        });
+    </script>
+</body>
+</html>

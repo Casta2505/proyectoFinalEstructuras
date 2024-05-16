@@ -270,9 +270,36 @@
             Roll Dice
         </button>
     </form>
+    <div th:text="${aviso}">
+    </div>
+    <form id="avisoForm" action="#" th:action="@{/actualizarAviso}" method="post">
+        <button class="roll" type="submit">Actualizar Aviso</button>
+    </form>
 </body>
-
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#avisoForm').submit(function (event) {
+                event.preventDefault(); // Prevenir la acción por defecto del formulario
+                $.ajax({
+                    type: "POST",
+                    url: "/actualizarAviso",
+                    success: function (data) {
+                        Swal.fire({
+                            title: 'RUTA MÁS RAPIDA',
+                            text: data,
+                            confirmButtonText: 'Aceptar'
+                        });
+                        $('#aviso').text(data);
+                    },
+                    error: function () {
+                        alert("Error al actualizar el aviso.");
+                    }
+                });
+            });
+        });
+    </script>
 <script>
 function throwDice() {
     const diceNumber = parseInt(document.getElementById("diceNumber").innerText);
