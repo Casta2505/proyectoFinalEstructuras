@@ -1,20 +1,20 @@
 package co.edu.unbosque.SnakesAndLadders.util.graph;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.unbosque.SnakesAndLadders.model.Player;
-import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
 public class Vertex implements Serializable {
 	private static final long serialVersionUID = 43890622329103446L;
 	private Integer position;
-	private List<Player> jugadores;
+	private ArrayList<Player> jugadores;
 	private String snakeOrLadder;
-	private MyLinkedList<Edge> adyacentEdges;
+	private ArrayList<Edge> adyacentEdges;
 
 	public Vertex() {
-		this.adyacentEdges = new MyLinkedList<Edge>();
+		this.adyacentEdges = new ArrayList<Edge>();
 	}
 
 	public String getSnakeOrLadder() {
@@ -26,7 +26,7 @@ public class Vertex implements Serializable {
 	}
 
 	public void addEdge(Edge e) {
-		adyacentEdges.addLast(e);
+		adyacentEdges.add(e);
 	}
 
 	public Integer getPosition() {
@@ -41,15 +41,15 @@ public class Vertex implements Serializable {
 		return jugadores;
 	}
 
-	public void setJugadores(List<Player> jugadores) {
+	public void setJugadores(ArrayList<Player> jugadores) {
 		this.jugadores = jugadores;
 	}
 
-	public MyLinkedList<Edge> getAdyacentEdges() {
+	public List<Edge> getAdyacentEdges() {
 		return adyacentEdges;
 	}
 
-	public void setAdyacentEdges(MyLinkedList<Edge> adyacentEdges) {
+	public void setAdyacentEdges(ArrayList<Edge> adyacentEdges) {
 		this.adyacentEdges = adyacentEdges;
 	}
 

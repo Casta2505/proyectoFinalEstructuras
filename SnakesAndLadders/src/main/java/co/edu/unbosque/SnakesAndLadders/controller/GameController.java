@@ -1,6 +1,14 @@
 package co.edu.unbosque.SnakesAndLadders.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,17 +20,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.ByteBufferOutputStream;
+import com.esotericsoftware.kryo.io.Output;
+
 import co.edu.unbosque.SnakesAndLadders.model.Board;
+import co.edu.unbosque.SnakesAndLadders.model.Components;
 import co.edu.unbosque.SnakesAndLadders.model.Game;
+import co.edu.unbosque.SnakesAndLadders.model.GameSave;
 import co.edu.unbosque.SnakesAndLadders.model.Player;
-import co.edu.unbosque.SnakesAndLadders.repository.GameRepository;
+import co.edu.unbosque.SnakesAndLadders.repository.GameSaveRepository;
+import co.edu.unbosque.SnakesAndLadders.util.graph.Edge;
+import co.edu.unbosque.SnakesAndLadders.util.graph.Graph;
+import co.edu.unbosque.SnakesAndLadders.util.graph.Vertex;
+import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
+import co.edu.unbosque.SnakesAndLadders.util.linkedlist.Node;
 
 @Controller
 @RequestMapping
 @SessionAttributes("game")
 public class GameController {
 	@Autowired
-	private GameRepository gameRep;
+	private GameSaveRepository gameSaveRep;
 
 	@GetMapping("/")
 	public String getSucursales() {
@@ -35,6 +54,22 @@ public class GameController {
 		Board board = new Board();
 		game.setBoard(board);
 		return game;
+	}
+
+	@GetMapping("/saveGame")
+	public String saveGame(@ModelAttribute("game") Game game, Model model) {
+		GameSave gs = new GameSave();
+		gs.setBoard(serializeBoard(game.getBoard()));
+		gs.setDiceNumber(game.getDiceNumber());
+		gs.setDifficulty(game.getDifficulty());
+		gs.setPlayerNum(game.getPlayerNum());
+		gs.setPlayers(serializeList(game.getPlayers()));
+		gs.setPlayerTurn(serializePlayer(game.getPlayerTurn()));
+		gs.setTheme(game.getTheme());
+		gameSaveRep.save(gs);
+		game = new Game();
+		game.setBoard(new Board());
+		return "menu";
 	}
 
 	@GetMapping("/SelectPlayers")
@@ -112,9 +147,9 @@ public class GameController {
 	@PostMapping("/SelectTwoCharacters")
 	public String getCharacters(@ModelAttribute("game") Game game, Model model,
 			@RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name) {
-		Player player1 = new Player(player1Name, 1, true, game,1);
-		Player player2 = new Player(player2Name, 1, false, game,2);
-		game.setPlayers(Arrays.asList(player1, player2));
+		Player player1 = new Player(player1Name, 1, 1);
+		Player player2 = new Player(player2Name, 1, 2);
+		game.setPlayers(new ArrayList<>(Arrays.asList(player1, player2)));
 		model.addAttribute("players", 2);
 		return "characters";
 	}
@@ -123,10 +158,11 @@ public class GameController {
 	public String getCharacters(@ModelAttribute("game") Game game, Model model,
 			@RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name,
 			@RequestParam("player3Name") String player3Name) {
-		Player player1 = new Player(player1Name, 1, true, game,1);
-		Player player2 = new Player(player2Name, 1, false, game,2);
-		Player player3 = new Player(player3Name, 1, false, game,3);
-		game.setPlayers(Arrays.asList(player1, player2, player3));
+		Player player1 = new Player(player1Name, 1, 1);
+		Player player2 = new Player(player2Name, 1, 2);
+		Player player3 = new Player(player3Name, 1, 3);
+		game.setPlayers(new ArrayList<>(Arrays.asList(player1, player2,player3)));
+
 		model.addAttribute("players", 3);
 		return "characters";
 	}
@@ -135,12 +171,102 @@ public class GameController {
 	public String getCharacters(@ModelAttribute("game") Game game, Model model,
 			@RequestParam("player1Name") String player1Name, @RequestParam("player2Name") String player2Name,
 			@RequestParam("player3Name") String player3Name, @RequestParam("player4Name") String player4Name) {
-		Player player1 = new Player(player1Name, 1, true, game,1);
-		Player player2 = new Player(player2Name, 1, false, game,2);
-		Player player3 = new Player(player3Name, 1, false, game,3);
-		Player player4 = new Player(player4Name, 1, false, game,4);
-		game.setPlayers(Arrays.asList(player1, player2, player3, player4));
+		Player player1 = new Player(player1Name, 1, 1);
+		Player player2 = new Player(player2Name, 1, 2);
+		Player player3 = new Player(player3Name, 1, 3);
+		Player player4 = new Player(player4Name, 1, 4);
+		game.setPlayers(new ArrayList<>(Arrays.asList(player1, player2,player3,player4)));
 		model.addAttribute("players", 4);
 		return "characters";
+	}
+
+	public byte[] serializeBoard(Board board) {
+	    Kryo kryo = new Kryo();
+	    kryo.setReferences(true);
+	    kryo.register(Board.class);
+	    kryo.register(Graph.class);
+	    kryo.register(Node.class);
+	    kryo.register(ArrayList.class);
+	    kryo.register(MyLinkedList.class);
+	    kryo.register(Vertex.class);
+	    kryo.register(Edge.class);
+	    kryo.register(Player.class);
+	    kryo.register(Components.class);
+
+	    try {
+	        ByteBuffer byteBuffer = ByteBuffer.allocate(1024*1024*1024);
+	        try (Output output = new Output(new ByteBufferOutputStream(byteBuffer))) {
+	            kryo.writeObject(output, board);
+	            output.flush();
+	            byte[] serializedData = output.toBytes();
+	            byteBuffer.clear();
+	            return serializedData;
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
+
+
+
+	public Board deserializeBoard(byte[] serializedBoard) {
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(serializedBoard);
+				ObjectInputStream ois = new ObjectInputStream(bis)) {
+			Board deserializedBoard = (Board) ois.readObject();
+			return deserializedBoard;
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public byte[] serializePlayer(Player player) {
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+			oos.writeObject(player);
+			oos.flush();
+			byte[] serializedPlayer = bos.toByteArray();
+			return serializedPlayer;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public Player deserializePlayer(byte[] serializedPlayer) {
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(serializedPlayer);
+				ObjectInputStream ois = new ObjectInputStream(bis)) {
+			Player deserializedPlayer = (Player) ois.readObject();
+			return deserializedPlayer;
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public byte[] serializeList(List<Player> players) {
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+			oos.writeObject(players);
+			oos.flush();
+			byte[] serializedPlayers = bos.toByteArray();
+			return serializedPlayers;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Player> deserializeList(byte[] serializedPlayers) {
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(serializedPlayers);
+				ObjectInputStream ois = new ObjectInputStream(bis)) {
+			List<Player> deserializedPlayers = (List<Player>) ois.readObject();
+			return deserializedPlayers;
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

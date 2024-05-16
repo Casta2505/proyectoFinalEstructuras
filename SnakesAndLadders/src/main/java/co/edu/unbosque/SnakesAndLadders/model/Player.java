@@ -2,33 +2,20 @@ package co.edu.unbosque.SnakesAndLadders.model;
 
 import java.io.Serializable;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-
-@Entity
 public class Player implements Serializable {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private static final long serialVersionUID = -5925284575093478673L;
 	private String name;
 	private int playerOrder;
 	private String piece;
 	private int boardPosition;
-	@ManyToOne
-	private Game game;
 
 	public Player() {
-		
+
 	}
 
-	public Player(String name, int boardPosition, boolean turn, Game game, int playerOrder) {
-		super();
+	public Player(String name, int boardPosition, int playerOrder) {
 		this.name = name;
 		this.boardPosition = boardPosition;
-		this.game = game;
 		this.playerOrder = playerOrder;
 	}
 
@@ -38,18 +25,6 @@ public class Player implements Serializable {
 
 	public void setOrder(int playerOrder) {
 		this.playerOrder = playerOrder;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public Game getGame() {
-		return game;
-	}
-
-	public void setGame(Game game) {
-		this.game = game;
 	}
 
 	public String getName() {

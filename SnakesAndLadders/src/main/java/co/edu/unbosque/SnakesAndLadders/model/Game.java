@@ -1,46 +1,28 @@
 package co.edu.unbosque.SnakesAndLadders.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
-@Entity
 public class Game implements Serializable{
-	private static final long serialVersionUID = 2924024448034625460L;
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private static final long serialVersionUID = 6602633130631338389L;
 	private int playerNum;
 	private String difficulty;
 	private String theme;
 	private int diceNumber;
-	@OneToOne
 	private Board board;
-	@OneToOne
 	private Player playerTurn;
-	@OneToMany(mappedBy = "game")
-	private List<Player> players;
+	private ArrayList<Player> players;
 
 	public String getTheme() {
 		return theme;
 	}
+	
 
 	public void setTheme(String theme) {
 		this.theme = theme;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public int getPlayerNum() {
@@ -75,11 +57,11 @@ public class Game implements Serializable{
 		this.diceNumber = diceNumber;
 	}
 
-	public List<Player> getPlayers() {
+	public ArrayList<Player> getPlayers() {
 		return players;
 	}
 
-	public void setPlayers(List<Player> players) {
+	public void setPlayers(ArrayList<Player> players) {
 		this.players = players;
 	}
 

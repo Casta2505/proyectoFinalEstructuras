@@ -2,23 +2,12 @@ package co.edu.unbosque.SnakesAndLadders.model;
 
 import java.io.Serializable;
 
+import co.edu.unbosque.SnakesAndLadders.util.graph.Graph;
 import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 
-@Entity
-public class Board implements Serializable{
-	private static final long serialVersionUID = 8099743593524681206L;
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
-	@Lob
-	@Column(columnDefinition = "LONGBLOB")
-	private byte[] graphData;
+public class Board implements Serializable {
+	private static final long serialVersionUID = -4692012718865825199L;
+	private Graph graphData;
 	private MyLinkedList<Components> snakes;
 	private MyLinkedList<Components> ladders;
 	private int height;
@@ -40,19 +29,11 @@ public class Board implements Serializable{
 		this.ladders = ladders;
 	}
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public byte[] getGraphData() {
+	public Graph getGraphData() {
 		return graphData;
 	}
 
-	public void setGraphData(byte[] graphData) {
+	public void setGraphData(Graph graphData) {
 		this.graphData = graphData;
 	}
 

@@ -273,7 +273,10 @@
     <div th:text="${aviso}">
     </div>
     <form id="avisoForm" action="#" th:action="@{/actualizarAviso}" method="post">
-        <button class="roll" type="submit">Actualizar Aviso</button>
+        <button class="roll" type="submit">Show Fastest Route</button>
+    </form>
+    <form id="avisoForm" action="/saveGame" method="get">
+        <button class="roll" type="submit">Save Game</button>
     </form>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
