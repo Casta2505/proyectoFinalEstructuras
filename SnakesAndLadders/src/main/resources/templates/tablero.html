@@ -233,6 +233,10 @@
 			border: 2px solid #b33951;
 			transition: .4s;
 		}
+		.imgPlayer {
+			height: 100px;
+			width: 100px;
+		}
 
 		.roll:hover {
 			color: #fff;
@@ -263,7 +267,13 @@
     </div>
 	
 	<span id="diceNumber" th:text="${diceNumber}" style="display: none;"></span>
-	<div id="diceContainer"></div>
+	<div id="diceContainer">
+	
+	</div>
+	<div ><span >
+     	<img class="imgPlayer" th:src="@{'/Img/p' + ${turn} + '.png'}" />
+     </span>
+     <br></br>
 	<form id="rollForm" action="/updateBoard" method="post">
         <input type="hidden" id="resultDicesInput" name="resultDices" value="">
         <button type="button" class="roll" onclick="throwDice()">
@@ -277,7 +287,7 @@
     </form>
     <form id="avisoForm" action="/saveGame" method="get">
         <button class="roll" type="submit">Save Game</button>
-    </form>
+    </form></div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

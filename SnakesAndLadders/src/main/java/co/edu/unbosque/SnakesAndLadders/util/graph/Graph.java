@@ -3,26 +3,28 @@ package co.edu.unbosque.SnakesAndLadders.util.graph;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
+
 
 
 public class Graph implements Serializable {
 	private static final long serialVersionUID = -3313277376541604505L;
-	private ArrayList<Vertex> listOfNodes;
+	private MyLinkedList<Vertex> listOfNodes;
 
 	public Graph() {
-		listOfNodes = new ArrayList<Vertex>();
+		listOfNodes = new MyLinkedList<Vertex>();
 
 	}
 
 	public void addVertex(Vertex v) {
-		listOfNodes.add(v);
+		listOfNodes.addLast(v);
 	}
 
-	public ArrayList<Vertex> getListOfNodes() {
+	public MyLinkedList<Vertex> getListOfNodes() {
 		return listOfNodes;
 	}
 
-	public void setListOfNodes(ArrayList<Vertex> listOfNodes) {
+	public void setListOfNodes(MyLinkedList<Vertex> listOfNodes) {
 		this.listOfNodes = listOfNodes;
 	}
 

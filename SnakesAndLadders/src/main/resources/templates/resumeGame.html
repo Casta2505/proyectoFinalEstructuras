@@ -28,17 +28,14 @@ body {
 
 .transparent-button {
 	position: absolute;
-	background-color: transparent; /* Cambia el fondo a verde */
-	color: transparent; /* Cambia el color del texto a negro */
 	padding: 1% 1%;
-	font-size: 3vw;
+	font-size: 1vw;
 	cursor: pointer;
-	top: 90%;
+	top: 120%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 40%;
-	max-width: 10%;
-	height: 15%;
+	width: 70%;
+	height: 110%;
 	text-align: center;
 	font-family: 'Chewy', cursive;
 }
@@ -46,11 +43,39 @@ body {
 </head>
 <body>
 	<div class="container">
-		<a href="/SelectPlayers" class="transparent-button">ww</a>
+
+		<table class="transparent-button"border="1">
+			<thead>
+				<tr>
+					<th>Nombres</th>
+					<th>Número de Jugadores</th>
+					<th>Dificultad</th>
+					<th>Dimensiones</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="game : ${games}">
+					<td th:text="${game.name}"></td>
+					<td th:text="${game.numPlayers}"></td>
+					<td th:text="${game.difficulty}"></td>
+					<td th:text="${game.dimensions}"></td>
+					<td><button onclick="eliminarJuego('__${game.name}__')">Eliminar</button></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<script>
+    function eliminarJuego(nombreJuego) {
+        // Aquí puedes agregar la lógica para eliminar el juego con el nombre especificado
+        console.log('Se ha solicitado eliminar el juego:', nombreJuego);
+    }
+</script>
 	</div>
-	
+
 	<div class="container">
-		<a href="/goBackMenu" class="transparent-button" style="background-color:transparent; left: 8%; top:-77%;">ww</a>
+		<a href="/goBackMenu" class="transparent-button"
+			style="background-color: transparent; left: 8%; top: -77%;"></a>
 	</div>
 </body>
 </html>

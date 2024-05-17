@@ -101,7 +101,7 @@ body {
 		<p th:text="${mensaje}"></p>
 	</div>
 
-	<form id="formPlayers" action="/updatePlayers" method="post">
+	<form id="formPlayers" th:action="@{/updatePlayers}" method="post">
 
 		<!-- Botones de jugadores -->
 		<button class="transparent-button2" id="two"
@@ -113,9 +113,9 @@ body {
 
 		<input class="transparent-input" type="number" id="height"
 			name="height" placeholder="Enter height"
-			style="top: 58%; left: 66.5%;" min="8" required /> <input
+			style="top: 58%; left: 66.5%;"  required /> <input
 			class="transparent-input" type="number" id="width" name="width"
-			placeholder="Enter width" style="top: 58%; left: 78.9%;" min="8"
+			placeholder="Enter width" style="top: 58%; left: 78.9%;" 
 			required /> <input type="hidden" id="playerSelected"
 			name="playerSelected" />
 	</form>
@@ -156,8 +156,6 @@ body {
 		<input type="hidden" id="difficulty" name="difficulty"
 			th:value="${difficulty}" />
 	</form>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
     function setDificultadAndSubmit(dificultad) {
         document.getElementById('difficulty').value = dificultad;
@@ -172,27 +170,14 @@ body {
     function setPlayersAndSubmit(playerSelected) {
         var height = document.getElementById('height').value;
         var width = document.getElementById('width').value;
-        
         if (height.trim() === '' || width.trim() === '') {
-            Swal.fire({
-                title: 'Error',
-                text: 'Por favor, completa todos los campos.',
-                icon: 'error'
-            });
+            alert('Por favor, completa todos los campos.');
             return; 
         }
-        
-        if (parseInt(height) < 8 || parseInt(width) < 8) {
-            Swal.fire({
-                title: 'Error',
-                text: 'La altura y el ancho deben ser al menos 8.',
-                icon: 'error'
-            });
-            return;
-        }
-       
+      
+        document.getElementById('playerSelected').value = playerSelected;
+        document.getElementById('formPlayers').submit();
     }
-
         
 </script>
 

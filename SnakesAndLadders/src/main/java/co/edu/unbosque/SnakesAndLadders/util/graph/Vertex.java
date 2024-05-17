@@ -37,7 +37,7 @@ public class Vertex implements Serializable {
 		this.position = position;
 	}
 
-	public List<Player> getJugadores() {
+	public ArrayList<Player> getJugadores() {
 		return jugadores;
 	}
 
@@ -45,7 +45,7 @@ public class Vertex implements Serializable {
 		this.jugadores = jugadores;
 	}
 
-	public List<Edge> getAdyacentEdges() {
+	public ArrayList<Edge> getAdyacentEdges() {
 		return adyacentEdges;
 	}
 

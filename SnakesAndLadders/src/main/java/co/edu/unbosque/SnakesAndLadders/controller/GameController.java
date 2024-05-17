@@ -128,6 +128,11 @@ public class GameController {
 		}
 		return null;
 	}
+	@GetMapping("/loadGame")
+	public String loadGame(Model model) {
+		
+		return "resumeGame";
+	}
 
 	@GetMapping("/goBackMenu")
 	public String goBack(Model model) {

@@ -37,7 +37,7 @@ public class BoardController {
 		int dice = game.getDiceNumber();
 		int total = height * width;
 		Graph graph = new Graph();
-		graph.setListOfNodes(new ArrayList<Vertex>());
+		graph.setListOfNodes(new MyLinkedList<Vertex>());
 		int totalLaddersAndSnakes = 0;
 		if (difficulty.equals("Easy")) {
 			totalLaddersAndSnakes = (int) (total * 0.02);
@@ -223,7 +223,7 @@ public class BoardController {
 		int dice = 0;
 		int total = height * width;
 		Graph graph = new Graph();
-		graph.setListOfNodes(new ArrayList<Vertex>());
+		graph.setListOfNodes(new MyLinkedList<Vertex>());
 		int totalLaddersAndSnakes = 0;
 		if (difficulty.equals("Easy")) {
 			totalLaddersAndSnakes = (int) (total * 0.02);
@@ -362,6 +362,22 @@ public class BoardController {
 			g.getListOfNodes().get(aux2.getPosition() - 1).getJugadores().add(save);
 			game.getBoard().setGraphData(g);
 		} else if ((resultDices + game.getPlayerTurn().getBoardPosition()) >= g.getListOfNodes().size()) {
+			MyLinkedList<String> winners = new MyLinkedList<String>();
+			model.addAttribute("first", game.getPlayerTurn().getPiece());
+			for (int i = g.getListOfNodes().size() - 1; i >= 0; i--) {
+			    ArrayList<Player> a = g.getListOfNodes().get(i).getJugadores();
+			    for (int j = 0; j < a.size(); j++) {
+			    	if(!game.getPlayerTurn().equals(a.get(j))) {
+			    		winners.add(a.get(j).getPiece());
+			    	}
+			    }
+			}
+			if(game.getPlayerNum()==2) {
+				model.addAttribute("second",winners.get(0));
+			}else {
+				model.addAttribute("second",winners.get(0));
+				model.addAttribute("third",winners.get(1));
+			}
 			return "ganador";
 		}
 		// ACTUALIZO EL TURNO AL NUEVO JUGADOR
@@ -413,6 +429,7 @@ public class BoardController {
 			}
 			izquierdaDerecha = !izquierdaDerecha;
 		}
+		model.addAttribute("turn", game.getPlayerTurn().getPiece());
 		model.addAttribute("matriz", matriz);
 	}
 

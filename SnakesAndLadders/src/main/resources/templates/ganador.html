@@ -211,6 +211,10 @@
         background-color: transparent;
         color: yellow;
     }
+    .imgPlayer {
+    	max-width: 100%;
+   		max-height: 100%;
+	}
     </style>
 </head>
 <body>
@@ -221,16 +225,16 @@
     <div id="confetti-container"></div>
     <div class="winners-banner"></div>
    
-
     <div class="podium">
         <div class="podium__base second-place">
-            <div class="flag second-flag">2</div>
+            <div class="flag second-flag"><span th:if="${second != null}"><img class="imgPlayer" th:src="@{'/Img/p' + ${second} + '.png'}" /></span></div>
         </div>
         <div class="podium__base first-place">
-            <div class="flag first-flag">1</div>
+            <div class="flag first-flag"><span th:if="${first != null}"><img class="imgPlayer" th:src="@{'/Img/p' + ${first} + '.png'}" /></span></div>
         </div>
+
         <div class="podium__base third-place">
-            <div class="flag third-flag">3</div>
+            <div class="flag third-flag"><span th:if="${third != null}"><img class="imgPlayer" th:src="@{'/Img/p' + ${third} + '.png'}" /></span></div>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
