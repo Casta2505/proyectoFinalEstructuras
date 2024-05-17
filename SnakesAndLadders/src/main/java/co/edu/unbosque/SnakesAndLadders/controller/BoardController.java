@@ -326,6 +326,7 @@ public class BoardController {
 		board.setSnakes(snakes);
 		generateBoardMatrix(game, model, snakes, ladders);
 		model.addAttribute("diceNumber", dice / 6);
+		model.addAttribute("imageBackground", "/Img/"+game.getTheme()+".png");
 		return "tablero";
 	}
 
@@ -391,6 +392,7 @@ public class BoardController {
 		// ACTUALIZAMOS EL TABLERO
 		generateBoardMatrix(game, model, game.getBoard().getSnakes(), game.getBoard().getLadders());
 		model.addAttribute("diceNumber", game.getDiceNumber());
+		model.addAttribute("imageBackground", "/Img/"+game.getTheme()+".png");
 		return "tablero";
 	}
 

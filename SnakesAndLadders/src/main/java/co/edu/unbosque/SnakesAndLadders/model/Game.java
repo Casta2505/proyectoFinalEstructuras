@@ -7,6 +7,7 @@ import java.util.List;
 import co.edu.unbosque.SnakesAndLadders.util.linkedlist.MyLinkedList;
 
 public class Game implements Serializable{
+	private Integer id;
 	private static final long serialVersionUID = 6602633130631338389L;
 	private int playerNum;
 	private String difficulty;
@@ -20,6 +21,17 @@ public class Game implements Serializable{
 		return theme;
 	}
 	
+	public Integer getId() {
+		return id;
+	}
+
+
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+
 
 	public void setTheme(String theme) {
 		this.theme = theme;

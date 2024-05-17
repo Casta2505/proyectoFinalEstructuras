@@ -30,6 +30,13 @@ public class GameSave implements Serializable{
 	private byte[] playerTurn;
 	@Column(columnDefinition = "LONGBLOB")
 	private byte[] players;
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	public int getPlayerNum() {
 		return playerNum;
 	}
