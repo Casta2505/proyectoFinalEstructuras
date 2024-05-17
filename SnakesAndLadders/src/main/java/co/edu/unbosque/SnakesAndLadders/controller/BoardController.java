@@ -396,17 +396,6 @@ public class BoardController {
 		return "tablero";
 	}
 
-	public boolean overBoard(@ModelAttribute("game") Game game, @RequestParam("resultDices") int resultDices) {
-		Graph g = game.getBoard().getGraphData();
-		int playerPos = game.getPlayerTurn().getBoardPosition();
-		int boardSize = g.getListOfNodes().size();
-		int weNeedMax = boardSize - playerPos;
-		if (resultDices > weNeedMax) {
-			return false;
-		} else {
-			return true;
-		}
-	}
 
 	private void generateBoardMatrix(Game game, Model model, MyLinkedList<Components> snakes,
 			MyLinkedList<Components> ladders) {

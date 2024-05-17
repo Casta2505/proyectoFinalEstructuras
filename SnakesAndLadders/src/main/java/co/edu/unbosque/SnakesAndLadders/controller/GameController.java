@@ -45,7 +45,7 @@ public class GameController {
 	private GameSaveRepository gameSaveRep;
 
 	@GetMapping("/")
-	public String getSucursales() {
+	public String getMainPage() {
 		return "menu";
 	}
 
